@@ -180,7 +180,12 @@ void hddLoadModules(void) {
 void hddInit(void) {
 	LOG("HDDSUPPORT Init\n");
 	hddForceUpdate = 1;
-	configGetInt(configGetByType(CONFIG_OPL), "hdd_frames_delay", &hddGameList.delay);
+        //s0ck3t
+//	configGetInt(configGetByType(CONFIG_OPL), "hdd_frames_delay", &hddGameList.delay);
+        if (!configGetInt(configGetByType(CONFIG_OPL), "hdd_frames_delay", &hddGameList.delay)) {
+            hddGameList.delay = gCoverLoadFrames;
+        }
+
 	ioPutRequest(IO_CUSTOM_SIMPLEACTION, &hddInitModules);
 	hddGameList.enabled = 1;
 }

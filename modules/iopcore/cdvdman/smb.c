@@ -628,6 +628,10 @@ int smb_OpenAndX(char *filename, u16 *FID, int Write)
 	mips_memset(SMB_buf, 0, sizeof(SMB_buf));
 
 	CF = server_specs.StringsCF;
+        
+//s0ck3t
+retry:
+	mips_memset(SMB_buf, 0, sizeof(SMB_buf));
 
 	OR->smbH.Magic = SMB_MAGIC;
 	OR->smbH.Cmd = SMB_COM_OPEN_ANDX;
@@ -663,6 +667,13 @@ int smb_OpenAndX(char *filename, u16 *FID, int Write)
 	// check sanity of SMB header
 	if (ORsp->smbH.Magic != SMB_MAGIC)
 		return -1;
+
+	//s0ck3t
+	if (ORsp->smbH.Eclass == 0x0f && CF==2) {
+		//addonics nas? retry without unicode support
+		CF = 1;
+		goto retry;
+	}
 
 	// check there's no error
 	if (ORsp->smbH.Eclass != STATUS_SUCCESS)

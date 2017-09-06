@@ -3,7 +3,7 @@
 DEBUG = 0
 EESIO_DEBUG = 0
 #comment following line to build without vmc
-VMC = 1
+VMC = 0
 CHILDPROOF = 0
 RTL = 0
 #change following line to "0" to build without GSM - DO NOT COMMENT!
@@ -34,7 +34,7 @@ ifeq ($(VMC),1)
 EECORE_OBJS += obj/usb_mcemu.o obj/hdd_mcemu.o obj/smb_mcemu.o 
 endif
 
-EE_BIN = opl.elf
+EE_BIN = OPL.ELF
 EE_BIN_PKD = OPNPS2LD.ELF
 EE_SRC_DIR = src/
 EE_OBJS_DIR = obj/
@@ -139,7 +139,7 @@ clean:  sclean
 sclean:
 	echo "Cleaning..."
 	echo "    * Interface"
-	rm -f -r $(MAPFILE) $(EE_BIN) $(EE_BIN_PKD) $(EE_OBJS_DIR) $(EE_ASM_DIR)
+	rm -f -r $(MAPFILE) $(EE_OBJS_DIR) $(EE_ASM_DIR)
 	echo "    * EE core"
 	$(MAKE) -C ee_core clean
 	$(MAKE) -C ee_core -f Makefile.alt clean

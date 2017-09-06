@@ -42,6 +42,28 @@ static base_game_info_t *usbGames;
 // forward declaration
 static item_list_t usbGameList;
 
+//s0ck3t
+#define IOCTL_SECTORS_MAP_START 0x13370000
+#define IOCTL_DEVID 0x13370201
+#define EXT2_SECTORS_BYTES 512
+
+static unsigned char ext2_file_sectors[52] = {  //52 instead of EXT2_SECTORS_BYTES..
+    0xff, 0xff, 0xff, 0xff,                     //..we don't need more here
+    0xee, 0xee, 0xdd, 0xdd,
+    0xcc, 0xcc, 0xbb, 0xbb,
+    0xaa, 0xaa, 0xff, 0xff,
+    0xee, 0xee, 0xdd, 0xdd,
+    0xcc, 0xcc, 0xbb, 0xbb,
+    0xaa, 0xaa, 0xff, 0xff,
+    0xee, 0xee, 0xdd, 0xdd,
+    0xcc, 0xcc, 0xbb, 0xbb,
+    0xaa, 0xaa, 0xff, 0xff,
+    0xee, 0xee, 0xdd, 0xdd,
+    0xcc, 0xcc, 0xbb, 0xbb,
+    0xaa, 0xaa, 0xff, 0xff
+};
+
+
 int usbFindPartition(char *target, char *name) {
 	int i, fd;
 	char path[255];
@@ -124,7 +146,12 @@ void usbInit(void) {
 	memset(usbModifiedDVDPrev, 0, 8);
 	usbGameCount = 0;
 	usbGames = NULL;
-	configGetInt(configGetByType(CONFIG_OPL), "usb_frames_delay", &usbGameList.delay);
+        //s0ck3t
+//	configGetInt(configGetByType(CONFIG_OPL), "usb_frames_delay", &usbGameList.delay);
+        if (!configGetInt(configGetByType(CONFIG_OPL), "usb_frames_delay", &usbGameList.delay)) {
+            usbGameList.delay = gCoverLoadFrames;
+        }
+        
 	ioPutRequest(IO_CUSTOM_SIMPLEACTION, &usbInitModules);
 	usbGameList.enabled = 1;
 }
@@ -209,6 +236,11 @@ static void usbLaunchGame(int id, config_set_t* configSet) {
 	int i, fd, val, index, compatmask = 0;
 	char partname[255], filename[32];
 	base_game_info_t* game = &usbGames[id];
+        //s0ck3t
+        int j, n;
+        unsigned int sector;
+        unsigned char tmpByte;
+        void *part_addr = NULL;
 
 	fd = fioDopen(usbPrefix);
 	if (fd < 0) {
@@ -294,9 +326,59 @@ static void usbLaunchGame(int id, config_set_t* configSet) {
 			compatmask = sbPrepare(game, configSet, irx_size, irx, &index);
 		}
 
+                //fat partition
 		val = fioIoctl(fd, 0xBEEFC0DE, partname);
 		memcpy((void*)((u32)irx + index + 44 + 4 * i), &val, 4);
+                
+                //s0ck3t
+                part_addr = (void*)((u32)irx + index + 44 + 4 * i);
 	}
+        
+        //s0ck3 - detect partition type, will fail if fat32
+        val = fioIoctl(fd, 0x1337C0DE, partname);
+        if (game->isISO && val == 0x83) {
+            LOG("USBSUPPORT Found EXT2 partition\n");
+
+            for (j = 0; j < irx_size; j++) {
+                if (!memcmp((const void*)((u32)irx + j), (const void*)&ext2_file_sectors, 52)) {
+                    LOG("USBSUPPORT Found ext2_file_sectors in usb_cdvdman.irx, patching\n");
+
+                    //fill with zeros
+                    memset((void*)((u32)irx + j + 0), 0, EXT2_SECTORS_BYTES);
+
+                    //sectors
+                    n = 0;
+                    while (n < EXT2_SECTORS_BYTES) {
+                        sector = fioIoctl(fd, IOCTL_SECTORS_MAP_START | n, partname);
+                        if (sector == 0xffffffff) {
+                            fioDclose(fd);
+                            guiMsgBox(_l(_STR_ERR_FRAGMENTED), 0, NULL);
+                            return;
+                        }
+
+                        if (!sector) {
+                            break;
+                        }
+
+                        memcpy((void*)((u32)irx + j + n), &sector, 4);
+
+                        n += 4;
+                    }
+                    
+                    //set ext2_devId
+                    //it's located directly after
+                    //512 bytes ext2_file_sectors array
+                    tmpByte = (unsigned char)fioIoctl(fd, IOCTL_DEVID, partname);
+                    memcpy((void*)((u32)irx + j + EXT2_SECTORS_BYTES), &tmpByte, 1);
+
+                    //reset part_addr, we will not use it when ext2
+                    val = 0;
+                    memcpy(part_addr, &val, 4);
+
+                    break;
+                }
+            }
+        }
 
 	if (gRememberLastPlayed) {
 		configSetStr(configGetByType(CONFIG_LAST), "last_played", game->startup);

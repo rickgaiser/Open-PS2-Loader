@@ -9,6 +9,9 @@
 #include <usbd.h>
 #include <usbd_macro.h>
 
+//s0ck3t
+#include <ctype.h>
+
 //#define DEBUG  //comment out this line when not debugging
 
 #include "mass_debug.h"
@@ -966,7 +969,11 @@ int mass_stor_warmup(mass_dev *dev) {
 
     printf("USBHDFSD: Vendor: %.8s\n", id.vendor);
     printf("USBHDFSD: Product: %.16s\n", id.product);
-    printf("USBHDFSD: Revision: %.4s\n", id.revision);
+    
+    //s0ck3t
+    if (isalpha(id.revision[0])) {
+        printf("USBHDFSD: Revision: %.4s\n", id.revision);
+    }
 
     while((stat = cbw_scsi_test_unit_ready(dev)) != 0)
     {

@@ -11,7 +11,13 @@ void InitializeTLB(void){
 		InitTLB32MB();
 	}
 	else{
-		_InitTLB();
+//s0ck3t
+		//_InitTLB();
+	__asm__ __volatile__(
+		"	li $3, 0x82;"
+		"	syscall;"
+		"	nop;"
+	);
 	}
 }
 

@@ -43,7 +43,11 @@ static char* appGetELFName(char* name) {
 void appInit(void) {
 	LOG("APPSUPPORT Init\n");
 	appForceUpdate = 1;
-	configGetInt(configGetByType(CONFIG_OPL), "app_frames_delay", &appItemList.delay);
+        //s0ck3t
+//        configGetInt(configGetByType(CONFIG_OPL), "app_frames_delay", &appItemList.delay);
+        if (!configGetInt(configGetByType(CONFIG_OPL), "app_frames_delay", &appItemList.delay)) {
+            appItemList.delay = gCoverLoadFrames;
+        }
 	configApps = configGetByType(CONFIG_APPS);
 	appItemList.enabled = 1;
 }

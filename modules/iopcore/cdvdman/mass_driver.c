@@ -16,6 +16,27 @@
 #include "mass_common.h"
 #include "mass_stor.h"
 
+//s0ck3t
+#define EXT2_SECTORS_BYTES 512
+#define EXT2_SECTOR_SIZE 512
+
+static unsigned char ext2_file_sectors[EXT2_SECTORS_BYTES] = {
+    0xff, 0xff, 0xff, 0xff,
+    0xee, 0xee, 0xdd, 0xdd,
+    0xcc, 0xcc, 0xbb, 0xbb,
+    0xaa, 0xaa, 0xff, 0xff,
+    0xee, 0xee, 0xdd, 0xdd,
+    0xcc, 0xcc, 0xbb, 0xbb,
+    0xaa, 0xaa, 0xff, 0xff,
+    0xee, 0xee, 0xdd, 0xdd,
+    0xcc, 0xcc, 0xbb, 0xbb,
+    0xaa, 0xaa, 0xff, 0xff,
+    0xee, 0xee, 0xdd, 0xdd,
+    0xcc, 0xcc, 0xbb, 0xbb,
+    0xaa, 0xaa, 0xff, 0xff
+};
+static unsigned char ext2_devId = 0xFF;
+
 extern int *p_part_start;
 
 #define getBI32(__buf) ((((u8 *) (__buf))[3] << 0) | (((u8 *) (__buf))[2] << 8) | (((u8 *) (__buf))[1] << 16) | (((u8 *) (__buf))[0] << 24))
@@ -629,6 +650,94 @@ inline int cbw_scsi_read_sector(mass_dev* dev, unsigned int lba, void* buffer, i
 	return ret;
 }
 
+
+//s0ck3t
+inline static u32 ext2_file_sectors_map2physical_sector(register u32 sector, u32 *can_read_sectors) {
+    register u32 entry_addr = 0, start_sector, end_sector, physical_sector;
+    register u32 passed = 0, past_passed = 0, holds = 0, same_holds = 0;
+
+    *can_read_sectors = 0;
+
+    while (entry_addr < EXT2_SECTORS_BYTES) {
+        start_sector = 
+            (ext2_file_sectors + entry_addr)[0] + 
+            ((ext2_file_sectors + entry_addr)[1] << 8) + 
+            ((ext2_file_sectors + entry_addr)[2] << 16) + 
+            ((ext2_file_sectors + entry_addr)[3] << 24);
+        entry_addr += 4;
+
+        if (same_holds == 0) {
+            holds = 
+                (ext2_file_sectors + entry_addr)[0] + 
+                ((ext2_file_sectors + entry_addr)[1] << 8) + 
+                ((ext2_file_sectors + entry_addr)[2] << 16) + 
+                ((ext2_file_sectors + entry_addr)[3] << 24);
+            entry_addr += 4;
+            
+            if (holds > 0 && (holds & 0x80000000) == 0 && holds % 2 != 0) {
+                holds++;
+            }
+        }
+        else {
+            same_holds--;
+        }
+
+        if (!start_sector || !holds) {
+            return 0;
+        }
+
+        if ((holds & 0x80000000) != 0) {
+            same_holds = (holds & 0x0FF00000) >> 20;
+            holds = (holds & 0x000FFFFF) + 1;
+        }
+
+        passed += holds;
+
+        if (sector < passed) {
+            physical_sector = start_sector + sector - past_passed;
+            end_sector = start_sector + holds;
+            *can_read_sectors = end_sector - physical_sector;       //todo check
+
+            return physical_sector;
+        }
+
+        past_passed += holds;
+    }
+
+    return 0;
+}
+
+
+inline static int ext2_read_file_sectors_by_map(register mass_dev* mass_device, register u32 sector, register u32 nsectors, register unsigned char *buff) {
+    register u32 physical_sector, read = 0, sectors2read;
+    u32 can_read_sectors = 0;
+
+
+    while (nsectors > 0) {
+        physical_sector = ext2_file_sectors_map2physical_sector(sector, &can_read_sectors);
+        if (!physical_sector) {
+            return read;
+        }
+
+        sectors2read = (nsectors < can_read_sectors ? nsectors : can_read_sectors);
+
+        cbw_scsi_read_sector(
+            mass_device,
+            physical_sector,
+            &buff[read * EXT2_SECTOR_SIZE],
+            EXT2_SECTOR_SIZE,
+            sectors2read
+        );
+
+        nsectors -= sectors2read;
+        read += sectors2read;
+        sector += sectors2read;
+    }
+    
+    return read;
+}
+
+
 /* size should be a multiple of sector size */
 int mass_stor_readSector(unsigned int lba, int nsectors, unsigned char* buffer)
 {
@@ -638,7 +747,18 @@ int mass_stor_readSector(unsigned int lba, int nsectors, unsigned char* buffer)
 
 	mass_dev* mass_device = &g_mass_device;
 
-	ret = cbw_scsi_read_sector(mass_device, lba, buffer, mass_device->sectorSize, nsectors);
+        if (
+            ext2_file_sectors[0] != 0xff && 
+            ext2_file_sectors[1] != 0xff &&
+            ext2_file_sectors[2] != 0xff &&
+            ext2_file_sectors[3] != 0xff
+        ) {
+            //ext2 mode
+            ret = ext2_read_file_sectors_by_map(mass_device, lba, nsectors, buffer);
+        }
+        else {
+            ret = cbw_scsi_read_sector(mass_device, lba, buffer, mass_device->sectorSize, nsectors);
+        }
 
 	SIGNALIOSEMA(io_sema);
 
@@ -718,6 +838,11 @@ int mass_stor_probe(int devId)
 	XPRINTF("mass_driver: probe: devId=%i\n", devId);
 
 	mass_dev* mass_device = &g_mass_device;
+
+        //s0ck3t
+        if (ext2_devId != 0xFF && devId != ext2_devId) {
+            return 0;
+        }
 
 	/* only one device supported */
 	if (mass_device->status & DEVICE_DETECTED) {

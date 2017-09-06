@@ -8,7 +8,9 @@
 static char *internalEnglish[LANG_STR_COUNT] = {
 	"English (internal)",
 	"               WELCOME TO OPEN PS2 LOADER. MAIN CODE BASED ON SOURCE CODE OF HD PROJECT <http://psx-scene.com> ADAPTATION TO USB ADVANCE FORMAT AND INITIAL GUI BY IFCARO <http://ps2dev.ifcaro.net> MOST OF LOADER CORE IS MADE BY JIMMIKAELKAEL. ALL THE GUI IMPROVEMENTS ARE MADE BY VOLCA. THANKS FOR USING OUR PROGRAM ^^",
-	"Open PS2 Loader %s",
+        //s0ck3t
+//        "Open PS2 Loader %s",
+	"E2OPL %s (based on Open PS2 Loader %s)",
 	"Save changes",
 	"Back",
 	"Network config",

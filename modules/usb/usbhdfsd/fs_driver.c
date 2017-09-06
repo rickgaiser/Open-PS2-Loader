@@ -51,6 +51,9 @@
 
 #define FLUSH_SECTORS		fat_flushSectors
 
+//s0ck3t
+#include "ext2fs.h"
+
 typedef struct _fs_rec {
 	int           file_flag;
   //This flag is always 1 for a file, and always 0 for a folder (different typedef)
@@ -226,7 +229,7 @@ int fs_init(iop_device_t *driver)
 }
 
 //---------------------------------------------------------------------------
-int fs_open(iop_file_t* fd, const char *name, int mode) {
+int fat_fs_open(iop_file_t* fd, const char *name, int mode) {
 	fat_driver* fatd;
 	fs_rec* rec = NULL;
 	int ret;
@@ -325,7 +328,7 @@ int fs_open(iop_file_t* fd, const char *name, int mode) {
 }
 
 //---------------------------------------------------------------------------
-int fs_close(iop_file_t* fd) {
+int fat_fs_close(iop_file_t* fd) {
 	fat_driver* fatd;
 	fs_rec* rec = (fs_rec*)fd->privdata;
     fd->privdata = 0;
@@ -356,7 +359,7 @@ int fs_close(iop_file_t* fd) {
 }
 
 //---------------------------------------------------------------------------
-int fs_lseek(iop_file_t* fd, unsigned long offset, int whence) {
+int fat_fs_lseek(iop_file_t* fd, unsigned long offset, int whence) {
 	fat_driver* fatd;
 	fs_rec* rec = (fs_rec*)fd->privdata;
 
@@ -394,7 +397,7 @@ int fs_lseek(iop_file_t* fd, unsigned long offset, int whence) {
 }
 
 //---------------------------------------------------------------------------
-int fs_write(iop_file_t* fd, void * buffer, int size )
+int fat_fs_write(iop_file_t* fd, void * buffer, int size )
 {
 #ifdef WRITE_SUPPORT	
 	fat_driver* fatd;
@@ -443,7 +446,7 @@ int fs_write(iop_file_t* fd, void * buffer, int size )
 }
 
 //---------------------------------------------------------------------------
-int fs_read(iop_file_t* fd, void * buffer, int size ) {
+int fat_fs_read(iop_file_t* fd, void * buffer, int size ) {
 	fat_driver* fatd;
 	fs_rec* rec = (fs_rec*)fd->privdata;
 	int result;
@@ -511,7 +514,7 @@ int getMillis()
 }
 
 //---------------------------------------------------------------------------
-int fs_remove (iop_file_t *fd, const char *name) {
+int fat_fs_remove (iop_file_t *fd, const char *name) {
 #ifdef WRITE_SUPPORT	
 	fat_driver* fatd;
 	fs_rec* rec;
@@ -554,7 +557,7 @@ int fs_remove (iop_file_t *fd, const char *name) {
 }
 
 //---------------------------------------------------------------------------
-int fs_mkdir  (iop_file_t *fd, const char *name) {
+int fat_fs_mkdir  (iop_file_t *fd, const char *name) {
 #ifdef WRITE_SUPPORT	
 	fat_driver* fatd;
 	int ret;
@@ -597,7 +600,7 @@ int fs_mkdir  (iop_file_t *fd, const char *name) {
 // or else this fs_rmdir function is never called.
 // example: fioRmdir("mass:/dir1");  //    <-- doesn't work (bug?)
 //          fioRmdir("mass0:/dir1"); //    <-- works fine
-int fs_rmdir  (iop_file_t *fd, const char *name) {
+int fat_fs_rmdir  (iop_file_t *fd, const char *name) {
 #ifdef WRITE_SUPPORT	
 	fat_driver* fatd;
 	int ret;
@@ -617,7 +620,7 @@ int fs_rmdir  (iop_file_t *fd, const char *name) {
 }
 
 //---------------------------------------------------------------------------
-int fs_dopen  (iop_file_t *fd, const char *name)
+int fat_fs_dopen  (iop_file_t *fd, const char *name)
 {
 	fat_driver* fatd;
 	int is_root = 0;
@@ -655,7 +658,7 @@ int fs_dopen  (iop_file_t *fd, const char *name)
 }
 
 //---------------------------------------------------------------------------
-int fs_dclose (iop_file_t *fd)
+int fat_fs_dclose (iop_file_t *fd)
 {
     if (fd->privdata == 0)
         return -EBADF;
@@ -669,7 +672,7 @@ int fs_dclose (iop_file_t *fd)
 }
 
 //---------------------------------------------------------------------------
-int fs_dread  (iop_file_t *fd, fio_dirent_t *buffer)
+int fat_fs_dread  (iop_file_t *fd, fio_dirent_t *buffer)
 {
 	fat_driver* fatd;
 	int ret;
@@ -706,7 +709,7 @@ int fs_dread  (iop_file_t *fd, fio_dirent_t *buffer)
 }
 
 //---------------------------------------------------------------------------
-int fs_getstat(iop_file_t *fd, const char *name, fio_stat_t *stat)
+int fat_fs_getstat(iop_file_t *fd, const char *name, fio_stat_t *stat)
 {
 	fat_driver* fatd;
 	int ret;
@@ -735,7 +738,7 @@ int fs_getstat(iop_file_t *fd, const char *name, fio_stat_t *stat)
 }
 
 //---------------------------------------------------------------------------
-int fs_chstat (iop_file_t *fd, const char *name, fio_stat_t *stat, unsigned int a)
+int fat_fs_chstat (iop_file_t *fd, const char *name, fio_stat_t *stat, unsigned int a)
 {
 	return fs_dummy();
 }
@@ -814,7 +817,7 @@ int fs_checkClusterChain(iop_file_t *fd, char *name)
 }
 
 //---------------------------------------------------------------------------
-int fs_ioctl(iop_file_t *fd, unsigned long request, void *data)
+int fat_fs_ioctl(iop_file_t *fd, unsigned long request, void *data)
 {
 	fat_driver* fatd;
 	fs_dir* rec = (fs_dir *) fd->privdata;
@@ -851,6 +854,151 @@ int fs_ioctl(iop_file_t *fd, unsigned long request, void *data)
 	_fs_unlock();
 	return ret;
 }
+
+
+/* s0ck3t - router start */
+int fs_close(iop_file_t* fd) {
+    if (ext2_volume != NULL) {
+        return ext2_fs_close(fd);
+    }
+    else {
+        return fat_fs_close(fd);
+    }
+}
+
+
+int fs_dclose(iop_file_t *fd) {
+    if (ext2_volume != NULL) {
+        return ext2_fs_closedir(fd);
+    }
+    else {
+        return fat_fs_dclose(fd);
+    }
+}
+
+
+int fs_lseek(iop_file_t* fd, unsigned long offset, int whence) {
+    if (ext2_volume != NULL) {
+        return ext2_fs_lseek(fd, offset, whence);
+    }
+    else {
+        return fat_fs_lseek(fd, offset, whence);
+    }
+}
+
+
+int fs_open(iop_file_t* fd, const char *name, int mode) {
+    if (ext2_volume != NULL) {
+        return ext2_fs_open(fd, name, mode);
+    }
+    else {
+        return fat_fs_open(fd, name, mode);
+    }
+}
+
+
+int fs_dopen(iop_file_t *fd, const char *name) {
+    if (ext2_volume != NULL) {
+        return ext2_fs_dopen(fd, name);
+    }
+    else {
+        return fat_fs_dopen(fd, name);
+    }
+}
+
+
+int fs_read(iop_file_t* fd, void * buffer, int size) {
+    if (ext2_volume != NULL) {
+        return ext2_fs_read(fd, buffer, size);
+    }
+    else {
+        return fat_fs_read(fd, buffer, size);
+    }
+}
+
+
+int fs_dread(iop_file_t *fd, fio_dirent_t *buffer) {
+    if (ext2_volume != NULL) {
+        return ext2_fs_dread(fd, buffer);
+    }
+    else {
+        return fat_fs_dread(fd, buffer);
+    }
+}
+
+
+/* rest todo */
+int fs_write(iop_file_t* fd, void * buffer, int size) {
+    if (ext2_volume != NULL) {
+        return ext2_fs_write(fd, buffer, size);
+    }
+    else {
+        return fat_fs_write(fd, buffer, size);
+    }
+}
+
+
+int fs_ioctl(iop_file_t *fd, unsigned long request, void *data) {
+    if (ext2_volume != NULL) {
+        return ext2_fs_ioctl(fd, request, data);
+    }
+    else {
+        return fat_fs_ioctl(fd, request, data);
+    }
+}
+
+
+int fs_remove(iop_file_t *fd, const char *name) {
+    if (ext2_volume != NULL) {
+        return ext2_fs_remove(fd, name);
+    }
+    else {
+        return fat_fs_remove(fd, name);
+    }
+}
+
+
+int fs_mkdir(iop_file_t *fd, const char *name) {
+    if (ext2_volume != NULL) {
+        return ext2_fs_mkdir(fd, name);
+    }
+    else {
+        return fat_fs_mkdir(fd, name);
+    }    
+}
+
+
+int fs_rmdir(iop_file_t *fd, const char *name) {
+    if (ext2_volume != NULL) {
+        return ext2_fs_rmdir(fd, name);
+    }
+    else {
+        return fat_fs_rmdir(fd, name);
+    }
+}
+
+
+int fs_getstat(iop_file_t *fd, const char *name, fio_stat_t *stat) {
+    if (ext2_volume != NULL) {
+        return ext2_fs_getstat(fd, name, stat);
+    }
+    else {
+        return fat_fs_getstat(fd, name, stat);
+    }
+}
+
+
+int fs_chstat(iop_file_t *fd, const char *name, fio_stat_t *stat, unsigned int a) {
+    if (ext2_volume != NULL) {
+        return ext2_fs_chstat(fd, name, stat, a);
+    }
+    else {
+        return fat_fs_chstat(fd, name, stat, a);
+    }
+}
+/* s0ck3t - router end */
+
+
 
 #ifndef WIN32
 /* init file system driver */

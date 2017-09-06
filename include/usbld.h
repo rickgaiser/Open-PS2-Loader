@@ -33,6 +33,9 @@
 
 #define USBLD_VERSION "0.9.2"
 
+//s0ck3t
+#define E2USBLD_VERSION "0.1.0"
+
 #define IO_MENU_UPDATE_DEFFERED 2
 
 void setErrorMessage(int strId, int error);
@@ -91,6 +94,7 @@ int gEnableArt;
 int gWideScreen;
 int gVMode; // 0 - Auto, 1 - PAL, 2 - NTSC
 int gVSync; // 0 - False, 1 - True
+int gCoverLoadFrames;
 
 // ------------------------------------------------------------------------------------------------------------------------
 

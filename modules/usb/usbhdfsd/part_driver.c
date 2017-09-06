@@ -9,6 +9,9 @@
 #include "mass_stor.h"
 #include "fat_driver.h"
 
+//s0ck3t
+#include "ext2fs.h"
+
 //#define DEBUG  //comment out this line when not debugging
 
 #include "mass_debug.h"
@@ -87,6 +90,10 @@ int part_connect(mass_dev* dev)
     part_table partTable;
     int count = 0;
     int i;
+    //s0ck3t
+    unsigned char *sbuf;
+    int j;
+    
     XPRINTF("USBHDFSD: part_connect devId %i \n", dev->devId);
 
     if (part_getPartitionTable(dev, &partTable) < 0)
@@ -106,8 +113,41 @@ int part_connect(mass_dev* dev)
             if (fat_mount(dev, partTable.record[i].start, partTable.record[i].count) >= 0)
                 count++;
         }
+
+        //s0ck3t
+        if(partTable.record[ i ].sid == 0x83) {
+            //ext2 partition
+            printf("USBHDFSD: mount ext2 partition %d\n", i);
+            if (ext2_mount(dev, partTable.record[i].start, partTable.record[i].count) >= 0) {
+                printf("USBHDFSD: ext2 partition mounted\n");
+                count++;
+                break;  //only one mounted ext2 partition is supported
+            }
+        }
     }
 
+    //s0ck3t
+    if ( count == 0 ) {
+        //try to find ext2 partition
+        printf("USBHDFSD: trying to find ext2 partition\n");
+        for (i = 0; i < 1024; i++) {
+
+            READ_SECTOR(dev, i, sbuf);
+            
+            for (j = 0; j < 512; j++) {
+                if (sbuf[j] == 0x53 && sbuf[j + 1] == 0xEF) {
+                    printf("USBHDFSD: found ext2 partition at sector %d, mounting\n", i);
+                    if (ext2_mount(dev, i - 2, dev->maxLBA) >= 0) {
+                        printf("USBHDFSD: ext2 partition mounted\n");
+                        count++;
+                    }
+                    
+                    break;
+                }
+            }
+        }
+    }
+    
     if ( count == 0 )
     {  // no partition table detected
         // try to use "floppy" option
@@ -123,7 +163,13 @@ int part_connect(mass_dev* dev)
 void part_disconnect(mass_dev* dev)
 {
     printf("USBHDFSD: part_disconnect devId %i \n", dev->devId);
-    fat_forceUnmount(dev);
+    
+    if (ext2_volume) {
+        ext2_umount();
+    }
+    else {
+        fat_forceUnmount(dev);
+    }
 }
 
 //---------------------------------------------------------------------------

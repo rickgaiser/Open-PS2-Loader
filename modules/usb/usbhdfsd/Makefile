@@ -9,7 +9,7 @@
 # $Id: $
 
 IOP_BIN  = usbhdfsd.irx
-IOP_OBJS = usb_driver.o fs_driver.o part_driver.o fat_driver.o scache.o usbhdfsd.o imports.o
+IOP_OBJS = usb_driver.o fs_driver.o part_driver.o fat_driver.o scache.o usbhdfsd.o imports.o ext2fs.o
 IOP_LIBS =
 
 IOP_INCS +=

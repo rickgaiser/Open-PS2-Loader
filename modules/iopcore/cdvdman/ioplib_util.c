@@ -84,10 +84,12 @@ static int fakemod_flag = 0;
 //--------------------------------------------------------------
 int getModInfo(u8 *modname, modinfo_t *info)
 {
+	iop_library_table_t *libtable;
 	iop_library_t *libptr;
 	register int i;
 
-	libptr = GetLoadcoreInternalData()->let_next;
+	libtable = GetLibraryEntryTable();
+	libptr = libtable->tail;
 	while (libptr != 0) {
 		for (i=0; i<8; i++) {
 			if (libptr->name[i] != modname[i])

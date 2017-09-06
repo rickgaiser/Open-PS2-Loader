@@ -152,7 +152,7 @@ void hookDmac_transfer(u32 channel);
 
 static int CheckPatchMc2_s1() {
 	modinfo_t info;
-	ModuleInfo_t *mod_table = GetLoadcoreInternalData()->image_info;
+	smod_mod_info_t *mod_table = (smod_mod_info_t *)0x800;
 	const char modname[8] = "mc2_s1";
 	u32 start, end;
 

@@ -854,12 +854,13 @@ static void setDefaults(void) {
 	gIPConfigChanged = 0;
 	gScrollSpeed = 1;
 	strncpy(gExitPath, "", 32);
-	gDefaultDevice = APP_MODE;
+	gDefaultDevice = USB_MODE;
 	gAutosort = 1;
 	gAutoRefresh = 0;
 	gDisableDebug = 0;
 	gEnableDandR = 0;
 	gRememberLastPlayed = 0;
+	gCoverLoadFrames = 30;
 #ifdef GSM
 	gShowGSM = 0;
 #endif
@@ -868,10 +869,10 @@ static void setDefaults(void) {
 	strncpy(gUSBPrefix, "", 32);
 	strncpy(gETHPrefix, "", 32);
 	gUseInfoScreen = 0;
-	gEnableArt = 0;
+	gEnableArt = 1;
 	gWideScreen = 0;
 
-	gUSBStartMode = 0;
+	gUSBStartMode = 2;
 	gHDDStartMode = 0;
 	gETHStartMode = 0;
 	gAPPStartMode = 0;
@@ -988,10 +989,13 @@ int main(int argc, char* argv[])
 	// until this point in the code is reached, only PREINIT_LOG macro should be used
 	LOG_ENABLE();
 
-	// queue deffered init which shuts down the intro screen later
-	ioPutRequest(IO_CUSTOM_SIMPLEACTION, &deferredInit);
-	
-	guiIntroLoop();
+//s0ck3t - skip intro
+//	// queue deffered init which shuts down the intro screen later
+//	ioPutRequest(IO_CUSTOM_SIMPLEACTION, &deferredInit);
+//	
+//	guiIntroLoop();
+        deferredInit();
+        
 	guiMainLoop();
 	
 	return 0;

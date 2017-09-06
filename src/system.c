@@ -177,6 +177,12 @@ void sysReset(int modload_mask) {
 
 	SifInitRpc(0);
 
+
+        //s0ck3t
+        /* Initialize CDVD, because SifIopReset() can hang otherwise. */
+        cdInit(CDVD_INIT_NOCHECK);
+        cdInit(CDVD_INIT_EXIT);
+
 	while(!SifIopReset(NULL, 0));
 	while(!SifIopSync());
 

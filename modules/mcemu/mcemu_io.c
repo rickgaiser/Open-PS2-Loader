@@ -67,7 +67,7 @@ int mc_read(int mc_num, void *buf, u32 page_num)
 #endif
 
 #ifdef USB_DRIVER
-	mass_stor_readSector(lba, 1, buf);
+	mass_stor_readSector(lba, 1, buf, 0);
 #endif
 
 #ifdef SMB_DRIVER

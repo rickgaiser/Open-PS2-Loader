@@ -300,7 +300,6 @@ config_set_t* sbPopulateConfig(base_game_info_t* game, const char* prefix, const
 	char path[255];
 	snprintf(path, 255, "%sCFG%s%s.cfg", prefix, sep, game->startup);
 	config_set_t* config = configAlloc(0, NULL, path);
-	configRead(config);
 
 	configSetStr(config, CONFIG_ITEM_NAME, game->name);
 	if (game->sizeMB != -1)

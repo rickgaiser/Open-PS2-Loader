@@ -49,6 +49,48 @@ http://my.opera.com/rejzor/blog/power-defragmenter-3-0-released
 
 Other utilities are: USBUtil 2.0, USB Extreme installer or USB Insane.
 
+----
+EXT2
+----
+OPL with EXT2 (readonly) file system support via USB mass storage - E2OPL.
+
+Features:
+- no file size limit
+- no need of defragmentation
+
+Your USB drive must be formatted with EXT2 file system and 4096 bytes
+(4KB) blocksize/cluster size. On Linux I can recommend "gparted", on Windows 
+you can use EaseUS Partition Master to format and Ext2Fsd to mount it. EXT2
+partition should be first on the drive. Directory tree structure is the same 
+as for HDD, SMB and USB (FAT32).
+
+Only ISO images are supported, even if 8GB in size, there is no need to split
+it like when using FAT32. E2OPL supports large ISO files. Also, there is no 
+need of defragmentation, like when using FAT32 file system. This version is 
+backward compatible with FAT32 file system, HDD and SMB.
+
+Check out this tutorial on how to create EXT2 partition on Windows:
+http://www.partition-tool.com/easeus-partition-manager/linux-partition-manager.htm
+
+Ext2Fsd tutorial (to mount EXT2 partition under Windows):
+http://www.techrepublic.com/blog/tr-dojo/enable-the-mounting-of-ext2-3-file-systems-on-a-windows-machine/
+
+Website: http://e2opl.sourceforge.net/
+
+Any suggestions or problems? Feel free to contact me at comgmail#screamingbox
+
+Thanks SP193 for help!
+
+Changelog:
+
+0.1.0:
+- EXT2 file system support (readonly)
+- load cover ART after 0,5 second of inactivity
+- fix for more than one USB device (only for EXT2)
+- skip intro
+- USB device is default
+- fix for Addonics NAS 3.0 Adapter (NAS30U2)
+
 ---
 SMB
 ---
