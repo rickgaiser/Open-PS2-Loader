@@ -31,7 +31,7 @@ endif
 ifeq ($(USE_USB),1)
 IOP_BIN  = usb_cdvdman.irx
 IOP_OBJNAME = usb.
-IOP_OBJS += device-usb.o mass_driver.o
+IOP_OBJS += device-usb.o
 ifeq ($(USE_DEV9),1)
 IOP_OBJS += dev9.o
 else

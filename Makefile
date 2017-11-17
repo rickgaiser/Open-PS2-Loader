@@ -88,7 +88,8 @@ GFX_OBJS =	usb_icon.o hdd_icon.o eth_icon.o app_icon.o \
 
 MISC_OBJS =	icon_sys_A.o icon_sys_J.o conf_theme_OPL.o
 
-IOP_OBJS =	iomanx.o filexio.o ps2fs.o usbd.o usbhdfsd.o usbhdfsdfsv.o \
+IOP_OBJS =	iomanx.o filexio.o ps2fs.o usbd.o usbhdfsdfsv.o \
+		bdm.o bdmfs_vfat.o usbmass_bd.o iLinkman.o IEEE1394_bd.o sio2sd_bd.o \
 		ps2atad.o hdpro_atad.o poweroff.o ps2hdd.o xhdd.o genvmc.o hdldsvr.o \
 		ps2dev9.o smsutils.o ps2ip.o smap.o isofs.o nbns-iop.o \
 		httpclient-iop.o netman.o ps2ips.o
@@ -507,8 +508,23 @@ modules/pademu/usb_pademu.irx: modules/pademu
 $(EE_ASM_DIR)usb_pademu.s: modules/pademu/usb_pademu.irx
 	$(BIN2S) $< $@ usb_pademu_irx
 
-$(EE_ASM_DIR)usbhdfsd.s: $(PS2SDK)/iop/irx/usbhdfsd.irx | $(EE_ASM_DIR)
-	$(BIN2S) $< $@ usbhdfsd_irx
+$(EE_ASM_DIR)bdm.s: $(PS2SDK)/iop/irx/bdm.irx | $(EE_ASM_DIR)
+	$(BIN2S) $< $@ bdm_irx
+
+$(EE_ASM_DIR)bdmfs_vfat.s: $(PS2SDK)/iop/irx/bdmfs_vfat.irx | $(EE_ASM_DIR)
+	$(BIN2S) $< $@ bdmfs_vfat_irx
+
+$(EE_ASM_DIR)usbmass_bd.s: $(PS2SDK)/iop/irx/usbmass_bd.irx | $(EE_ASM_DIR)
+	$(BIN2S) $< $@ usbmass_bd_irx
+
+$(EE_ASM_DIR)iLinkman.s: $(PS2SDK)/iop/irx/iLinkman.irx | $(EE_ASM_DIR)
+	$(BIN2S) $< $@ iLinkman_irx
+
+$(EE_ASM_DIR)IEEE1394_bd.s: $(PS2SDK)/iop/irx/IEEE1394_bd.irx | $(EE_ASM_DIR)
+	$(BIN2S) $< $@ IEEE1394_bd_irx
+
+$(EE_ASM_DIR)sio2sd_bd.s: $(PS2SDK)/iop/irx/sio2sd_bd.irx | $(EE_ASM_DIR)
+	$(BIN2S) $< $@ sio2sd_bd_irx
 
 modules/usb/usbhdfsdfsv/usbhdfsdfsv.irx: modules/usb/usbhdfsdfsv
 	echo " -usbhdfsdfsv"

@@ -53,7 +53,7 @@ DECLARE_EXPORT_TABLE(cdvdman, 1, 1)
 	DECLARE_EXPORT(sceCdReadCdda)
 	DECLARE_EXPORT(_dummy)
 	DECLARE_EXPORT(_dummy)
-	DECLARE_EXPORT(_dummy)	
+	DECLARE_EXPORT(_dummy)
 	DECLARE_EXPORT(sceCdGetReadPos)
 	DECLARE_EXPORT(_dummy)
 	DECLARE_EXPORT(_dummy)
@@ -135,6 +135,21 @@ DECLARE_EXPORT_TABLE(cdvdstm, 1, 1)
 	DECLARE_EXPORT(_retonly)
 	DECLARE_EXPORT(_retonly)
 END_EXPORT_TABLE
+
+#ifdef USB_DRIVER
+DECLARE_EXPORT_TABLE(bdm, 1, 0)
+	DECLARE_EXPORT(_start)
+	DECLARE_EXPORT(_retonly)
+	DECLARE_EXPORT(_retonly)
+	DECLARE_EXPORT(_retonly)
+	DECLARE_EXPORT(bdm_connect_bd)
+	DECLARE_EXPORT(bdm_disconnect_bd)
+//	DECLARE_EXPORT(bdm_connect_fs)
+//	DECLARE_EXPORT(bdm_disconnect_fs)
+//	DECLARE_EXPORT(bdm_get_bd)
+//	DECLARE_EXPORT(bdm_RegisterCallback)
+END_EXPORT_TABLE
+#endif
 
 #ifdef SMB_DRIVER
 // dev9 export table
@@ -261,10 +276,6 @@ DECLARE_EXPORT_TABLE(oplutils, 1, 1)
 	DECLARE_EXPORT(_retonly)
 	DECLARE_EXPORT(_retonly)
 	DECLARE_EXPORT(getModInfo)
-#ifdef USB_DRIVER
-	DECLARE_EXPORT(mass_stor_readSector)
-	DECLARE_EXPORT(mass_stor_writeSector)
-#endif
 #ifdef HDD_DRIVER
 	DECLARE_EXPORT(ata_device_sector_io)
 #endif

@@ -112,6 +112,18 @@ extern int size_elfldr_elf;
 extern void *pusbd_irx;
 extern int size_pusbd_irx;
 
+extern void *usbmass_bd_irx;
+extern int size_usbmass_bd_irx;
+
+extern void *iLinkman_irx;
+extern int size_iLinkman_irx;
+
+extern void *IEEE1394_bd_irx;
+extern int size_IEEE1394_bd_irx;
+
+extern void *sio2sd_bd_irx;
+extern int size_sio2sd_bd_irx;
+
 #ifdef PADEMU
 extern void *ds34bt_irx;
 extern int size_ds34bt_irx;
@@ -430,6 +442,8 @@ void sysExecExit()
 #define CORE_IRX_VMC 0x10
 #define CORE_IRX_DEBUG 0x20
 #define CORE_IRX_DECI2 0x40
+#define CORE_IRX_ILINK 0x80
+#define CORE_IRX_SIO2SD 0x100
 
 #ifdef VMC
 static unsigned int sendIrxKernelRAM(unsigned int modules, void *ModuleStorage, int size_cdvdman_irx, void **cdvdman_irx, int size_mcemu_irx, void **mcemu_irx)
@@ -466,6 +480,20 @@ static unsigned int sendIrxKernelRAM(unsigned int modules, void *ModuleStorage, 
     if ((modules & CORE_IRX_USB) PADEMU_ARG) {
         irxptr_tab[modcount].info = size_pusbd_irx | SET_OPL_MOD_ID(OPL_MODULE_ID_USBD);
         irxptr_tab[modcount++].ptr = pusbd_irx;
+    }
+    if (modules & CORE_IRX_USB) {
+        irxptr_tab[modcount].info = size_usbmass_bd_irx | SET_OPL_MOD_ID(OPL_MODULE_ID_USBMASS);
+        irxptr_tab[modcount++].ptr = (void *)&usbmass_bd_irx;
+    }
+    if (modules & CORE_IRX_ILINK) {
+        irxptr_tab[modcount].info = size_iLinkman_irx | SET_OPL_MOD_ID(OPL_MODULE_ID_ILINK);
+        irxptr_tab[modcount++].ptr = (void *)&iLinkman_irx;
+        irxptr_tab[modcount].info = size_IEEE1394_bd_irx | SET_OPL_MOD_ID(OPL_MODULE_ID_ILINKBD);
+        irxptr_tab[modcount++].ptr = (void *)&IEEE1394_bd_irx;
+    }
+    if (modules & CORE_IRX_SIO2SD) {
+        irxptr_tab[modcount].info = size_sio2sd_bd_irx | SET_OPL_MOD_ID(OPL_MODULE_ID_SIO2SDBD);
+        irxptr_tab[modcount++].ptr = (void *)&sio2sd_bd_irx;
     }
     if (modules & CORE_IRX_ETH) {
 #ifdef __DECI2_DEBUG //FIXME: I don't know why, but the ingame SMAP driver cannot be used with the DECI2 modules. Perhaps that old bug with the network stack become unresponsive gets triggered? Until this is solved, use the normal SMAP driver.
@@ -706,6 +734,10 @@ void sysLaunchLoaderElf(char *filename, char *mode_str, int size_cdvdman_irx, vo
 
     if (!strcmp(mode_str, "USB_MODE"))
         modules = CORE_IRX_USB;
+    else if (!strcmp(mode_str, "ILINK_MODE"))
+        modules = CORE_IRX_ILINK;
+    else if (!strcmp(mode_str, "SIO2SD_MODE"))
+        modules = CORE_IRX_SIO2SD;
     else if (!strcmp(mode_str, "ETH_MODE"))
         modules = CORE_IRX_ETH | CORE_IRX_SMB;
     else

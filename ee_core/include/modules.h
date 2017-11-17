@@ -6,6 +6,14 @@ enum OPL_MODULE_ID {
 
     //USB mode modules
     OPL_MODULE_ID_USBD,
+    OPL_MODULE_ID_USBMASS,
+
+    //iLink mode modules
+    OPL_MODULE_ID_ILINK,
+    OPL_MODULE_ID_ILINKBD,
+
+    //sdCard mode modules
+    OPL_MODULE_ID_SIO2SDBD,
 
     //SMB mode modules
     OPL_MODULE_ID_SMSTCPIP,

@@ -84,13 +84,29 @@ static void ResetIopSpecial(const char *args, unsigned int arglen)
 #else
 #define PADEMU_ARG
 #endif
-    if (GameMode == USB_MODE PADEMU_ARG) {
+    switch (GameMode) {
+    case USB_MODE:
         LoadOPLModule(OPL_MODULE_ID_USBD, 0, 11, "thpri=15,16");
-    }
-    if (GameMode == ETH_MODE) {
+        LoadOPLModule(OPL_MODULE_ID_USBMASS, 0, 0, NULL);
+        break;
+    case ETH_MODE:
         LoadOPLModule(OPL_MODULE_ID_SMSTCPIP, 0, 0, NULL);
         LoadOPLModule(OPL_MODULE_ID_SMAP, 0, g_ipconfig_len, g_ipconfig);
         LoadOPLModule(OPL_MODULE_ID_SMBINIT, 0, 0, NULL);
+        break;
+    case HDD_MODE:
+        break;
+    case ILINK_MODE:
+        LoadOPLModule(OPL_MODULE_ID_ILINK, 0, 0, NULL);
+        LoadOPLModule(OPL_MODULE_ID_ILINKBD, 0, 0, NULL);
+        break;
+    case SIO2SD_MODE:
+        LoadOPLModule(OPL_MODULE_ID_SIO2SDBD, 0, 0, NULL);
+        break;
+    };
+
+    if ((GameMode != USB_MODE) PADEMU_ARG) {
+        LoadOPLModule(OPL_MODULE_ID_USBD, 0, 11, "thpri=15,16");
     }
 
 #ifdef __LOAD_DEBUG_MODULES

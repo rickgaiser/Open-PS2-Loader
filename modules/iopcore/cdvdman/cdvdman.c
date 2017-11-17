@@ -5,8 +5,6 @@
 */
 
 #include "smsutils.h"
-#include "mass_common.h"
-#include "mass_stor.h"
 #include "dev9.h"
 #include "oplsmb.h"
 #include "smb.h"

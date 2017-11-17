@@ -69,9 +69,13 @@ u32 g_compat_mask;
 
 char GameID[16];
 int GameMode;
-#define USB_MODE 0
-#define ETH_MODE 1
-#define HDD_MODE 2
+enum GAME_MODE {
+    USB_MODE = 0,
+    ETH_MODE,
+    HDD_MODE,
+    ILINK_MODE,
+    SIO2SD_MODE
+};
 
 char ExitPath[32];
 int HDDSpindown;

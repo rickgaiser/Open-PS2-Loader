@@ -33,17 +33,6 @@ void mips_memset(void *, int, unsigned);
 int getModInfo(u8 *modname, modinfo_t *info);
 #define I_getModInfo DECLARE_IMPORT(4, getModInfo)
 
-/* MASS Transfer Imports */
-#ifdef USB_DRIVER
-
-void mass_stor_readSector(unsigned int lba, unsigned short int nsectors, unsigned char *buffer);
-#define I_mass_stor_readSector DECLARE_IMPORT(5, mass_stor_readSector)
-
-void mass_stor_writeSector(unsigned int lba, unsigned short int nsectors, const unsigned char *buffer);
-#define I_mass_stor_writeSector DECLARE_IMPORT(6, mass_stor_writeSector)
-
-#endif
-
 /* ATAD Transfer Imports */
 #ifdef HDD_DRIVER
 

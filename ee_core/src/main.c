@@ -3,7 +3,7 @@
   Copyright 2006-2008 Polo
   Licenced under Academic Free License version 3.0
   Review OpenUsbLd README & LICENSE files for further details.
-  
+
   Some parts of the code are taken from HD Project by Polo
 */
 
@@ -37,6 +37,10 @@ int main(int argc, char **argv)
         GameMode = ETH_MODE;
     else if (!_strncmp(argv[i], "HDD_MODE", 8))
         GameMode = HDD_MODE;
+    else if (!_strncmp(argv[i], "ILINK_MODE", 10))
+        GameMode = ILINK_MODE;
+    else if (!_strncmp(argv[i], "SIO2SD_MODE", 11))
+        GameMode = SIO2SD_MODE;
     DPRINTF("Game Mode = %d\n", GameMode);
 
     DisableDebug = 0;

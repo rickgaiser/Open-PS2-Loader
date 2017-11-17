@@ -20,8 +20,23 @@ extern int size_usb_cdvdman_irx;
 extern void *usbd_irx;
 extern int size_usbd_irx;
 
-extern void *usbhdfsd_irx;
-extern int size_usbhdfsd_irx;
+extern void *bdm_irx;
+extern int size_bdm_irx;
+
+extern void *bdmfs_vfat_irx;
+extern int size_bdmfs_vfat_irx;
+
+extern void *usbmass_bd_irx;
+extern int size_usbmass_bd_irx;
+
+extern void *iLinkman_irx;
+extern int size_iLinkman_irx;
+
+extern void *IEEE1394_bd_irx;
+extern int size_IEEE1394_bd_irx;
+
+extern void *sio2sd_bd_irx;
+extern int size_sio2sd_bd_irx;
 
 extern void *usbhdfsdfsv_irx;
 extern int size_usbhdfsdfsv_irx;
@@ -40,6 +55,7 @@ static unsigned char usbModifiedCDPrev[8];
 static unsigned char usbModifiedDVDPrev[8];
 static int usbGameCount = 0;
 static base_game_info_t *usbGames;
+static char bdmDriver[5];
 
 // forward declaration
 static item_list_t usbGameList;
@@ -75,8 +91,6 @@ int usbFindPartition(char *target, char *name)
     return 0;
 }
 
-#define USBHDFSDFSV_FUNCNUM(x) (('U' << 8) | (x))
-
 static unsigned int UsbGeneration = 0;
 
 static void usbEventHandler(void *packet, void *opt)
@@ -100,8 +114,21 @@ void usbLoadModules(void)
         }
     }
 
+    // Load Block Device Manager and VFAT (mass:) driver
+    sysLoadModuleBuffer(&bdm_irx, size_bdm_irx, 0, NULL);
+    sysLoadModuleBuffer(&bdmfs_vfat_irx, size_bdmfs_vfat_irx, 0, NULL);
+
+    // Load USB Block Device drivers
     sysLoadModuleBuffer(pusbd_irx, size_pusbd_irx, 0, NULL);
-    sysLoadModuleBuffer(&usbhdfsd_irx, size_usbhdfsd_irx, 0, NULL);
+    sysLoadModuleBuffer(&usbmass_bd_irx, size_usbmass_bd_irx, 0, NULL);
+
+    // Load iLink Block Device drivers
+    sysLoadModuleBuffer(&iLinkman_irx, size_iLinkman_irx, 0, NULL);
+    sysLoadModuleBuffer(&IEEE1394_bd_irx, size_IEEE1394_bd_irx, 0, NULL);
+
+    // Load SIO2SD Block Device drivers
+    sysLoadModuleBuffer(&sio2sd_bd_irx, size_sio2sd_bd_irx, 0, NULL);
+
     sysLoadModuleBuffer(&usbhdfsdfsv_irx, size_usbhdfsdfsv_irx, 0, NULL);
     SifAddCmdHandler(0, &usbEventHandler, NULL);
 
@@ -358,6 +385,10 @@ static void usbLaunchGame(int id, config_set_t *configSet)
 
         fd = fileXioOpen(partname, O_RDONLY);
         if (fd >= 0) {
+            int *pBDMDriver = (int *)bdmDriver;
+            *pBDMDriver = fileXioIoctl(fd, USBMASS_IOCTL_GET_DRIVERNAME, partname);
+            LOG("bdmDriver=%s\n", bdmDriver);
+
             settings->LBAs[i] = fileXioIoctl(fd, USBMASS_IOCTL_GET_LBA, partname);
             if (gCheckUSBFragmentation) {
                 if ((startCluster = (unsigned int)fileXioIoctl(fd, USBMASS_IOCTL_GET_CLUSTER, partname)) == 0 || fileXioDevctl("xmass0:", XUSBHDFSD_CHECK_CLUSTER_CHAIN, &startCluster, 4, NULL, 0) == 0) {
@@ -446,7 +477,12 @@ static void usbLaunchGame(int id, config_set_t *configSet)
 #define USB_MCEMU
 #endif
 
-    sysLaunchLoaderElf(filename, "USB_MODE", irx_size, irx, USB_MCEMU EnablePS2Logo, compatmask);
+    if (!strcmp(bdmDriver, "usb"))
+        sysLaunchLoaderElf(filename, "USB_MODE", irx_size, irx, USB_MCEMU EnablePS2Logo, compatmask);
+    else if (!strcmp(bdmDriver, "sd") && strlen(bdmDriver) == 2)
+        sysLaunchLoaderElf(filename, "ILINK_MODE", irx_size, irx, USB_MCEMU EnablePS2Logo, compatmask);
+    else if (!strcmp(bdmDriver, "sdc") && strlen(bdmDriver) == 3)
+        sysLaunchLoaderElf(filename, "SIO2SD_MODE", irx_size, irx, USB_MCEMU EnablePS2Logo, compatmask);
 }
 
 static config_set_t *usbGetConfig(int id)

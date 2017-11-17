@@ -18,10 +18,6 @@ loadcore_IMPORTS_end
 
 oplutils_IMPORTS_start
 I_getModInfo
-#ifdef USB_DRIVER
-I_mass_stor_readSector
-I_mass_stor_writeSector
-#endif
 #ifdef HDD_DRIVER
 I_ata_device_sector_io
 #endif
@@ -33,8 +29,8 @@ I_smb_WriteFile
 oplutils_IMPORTS_end
 
 sifcmd_IMPORTS_start
-I_sceSifBindRpc 
-I_sceSifCallRpc 
+I_sceSifBindRpc
+I_sceSifCallRpc
 I_sceSifGetOtherData
 I_sceSifInitRpc
 I_sceSifSendCmd
@@ -42,7 +38,7 @@ sifcmd_IMPORTS_end
 
 sifman_IMPORTS_start
 I_sceSifInit
-I_sceSifSetDma 
+I_sceSifSetDma
 I_sceSifCheckInit
 I_sceSifDmaStat
 sifman_IMPORTS_end

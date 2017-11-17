@@ -4,7 +4,7 @@
   Copyright 2016 doctorxyz
   Licenced under Academic Free License version 3.0
   Review Open-Ps2-Loader README & LICENSE files for further details.
-  
+
   Some parts of the code have been taken from Polo's HD Project and doctorxyz's GSM
 */
 
@@ -294,20 +294,19 @@ static void RnC3_UYA_patches(void *address)
 			For retail units, there are 2 libcdvd modules. Therefore the pointer should be left-shifted by 2.	*/
 
     word1 = JAL((unsigned int)&RnC3_AlwaysAllocMem);
-    switch (GameMode) {
-        case HDD_MODE:
-//For HDD mode, the CDVDMAN module has its name as "dev9", so adjust the shifting accordingly.
+    if (GameMode == HDD_MODE) {
+        //For HDD mode, the CDVDMAN module has its name as "dev9", so adjust the shifting accordingly.
 #ifdef _DTL_T10000
-            word2 = 0x00021943; //sra $v1, $v0, 5	For DTL-T10000.
+        word2 = 0x00021943; //sra $v1, $v0, 5	For DTL-T10000.
 #else
-            word2 = 0x00021840; //sll $v1, $v0, 1	For retail sets.
+        word2 = 0x00021840; //sll $v1, $v0, 1	For retail sets.
 #endif
-            break;
-        default:
+    }
+    else {
 #ifdef _DTL_T10000
-            word2 = 0x00021903; //sra $v1, $v0, 4	For DTL-T10000.
+        word2 = 0x00021903; //sra $v1, $v0, 4	For DTL-T10000.
 #else
-            word2 = 0x00021880; //sll $v1, $v0, 2	For retail sets.
+        word2 = 0x00021880; //sll $v1, $v0, 2	For retail sets.
 #endif
     }
 
@@ -402,10 +401,16 @@ int Skip_Videos_sceMpegIsEnd(void)
 void apply_patches(void)
 {
     const patchlist_t *p;
+    int mode;
+
+    if ((GameMode == HDD_MODE) || (GameMode == ETH_MODE))
+        mode = GameMode;
+    else
+        mode = USB_MODE;
 
     // if there are patches matching game name/mode then fill the patch table
     for (p = patch_list; p->game; p++) {
-        if ((!_strcmp(GameID, p->game)) && ((p->mode == ALL_MODE) || (GameMode == p->mode))) {
+        if ((!_strcmp(GameID, p->game)) && ((p->mode == ALL_MODE) || (mode == p->mode))) {
             switch (p->patch.addr) {
                 case PATCH_GENERIC_NIS:
                     NIS_generic_patches();
