@@ -1,5 +1,5 @@
-VERSION = 0
-SUBVERSION = 9
+MAJORVERSION = 0
+MINORVERSION = 9
 PATCHLEVEL = 3+
 EXTRAVERSION = Beta
 
@@ -60,9 +60,13 @@ DECI2_DEBUG ?= 0
 CHILDPROOF ?= 0
 
 # ======== DO NOT MODIFY VALUES AFTER THIS POINT! UNLESS YOU KNOW WHAT YOU ARE DOING ========
-REVISION = $(shell expr $(shell git rev-list --count HEAD) + 2)
+VERSION = $(MAJORVERSION).$(MINORVERSION).$(PATCHLEVEL)$(if $(EXTRAVERSION),-$(EXTRAVERSION))
 
-GIT_HASH = $(shell git rev-parse --short=7 HEAD 2>/dev/null)
+ifneq ($(shell git tag --contains),$(VERSION))
+  REVISION = $(shell expr $(shell git rev-list --count HEAD) + 2)
+  GIT_HASH = $(shell git rev-parse --short=7 HEAD 2>/dev/null)
+endif
+
 ifeq ($(shell git diff --quiet; echo $$?),1)
   DIRTY = -dirty
 endif
@@ -70,7 +74,7 @@ ifneq ($(shell test -d .git; echo $$?),0)
   DIRTY = -dirty
 endif
 
-OPL_VERSION = $(VERSION).$(SUBVERSION).$(PATCHLEVEL).$(REVISION)$(if $(EXTRAVERSION),-$(EXTRAVERSION))$(if $(GIT_HASH),-$(GIT_HASH))$(if $(DIRTY),$(DIRTY))$(if $(LOCALVERSION),-$(LOCALVERSION))
+OPL_VERSION = $(MAJORVERSION).$(MINORVERSION).$(PATCHLEVEL)$(if $(REVISION),.$(REVISION))$(if $(EXTRAVERSION),-$(EXTRAVERSION))$(if $(GIT_HASH),-$(GIT_HASH))$(if $(DIRTY),$(DIRTY))$(if $(LOCALVERSION),-$(LOCALVERSION))
 
 FRONTEND_OBJS = pad.o fntsys.o renderman.o menusys.o OSDHistory.o system.o lang.o config.o hdd.o dialogs.o \
 		dia.o ioman.o texcache.o themes.o supportbase.o usbsupport.o ethsupport.o hddsupport.o \
