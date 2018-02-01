@@ -104,7 +104,7 @@ deploy:
   name: OPL v${OPL_VERSION}
   body: Automated release from Travis CI
   file:
-    - ${TRAVIS_BUILD_DIR}/OPNPS2LD-${OPL_VERSION}.ZIP
+    - ${TRAVIS_BUILD_DIR}/OPNPS2LD-${OPL_VERSION}.zip
     - ${TRAVIS_BUILD_DIR}/OPNPS2LD_LANGS-${OPL_VERSION}.zip
   on:
     branch: master

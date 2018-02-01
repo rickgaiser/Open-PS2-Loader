@@ -242,7 +242,7 @@ endif
 release:
 	echo "Building Open PS2 Loader $(OPL_VERSION)..."
 	echo "-Interface"
-	$(MAKE) VMC=1 GSM=1 IGS=1 PADEMU=1 CHEAT=1 HIRES=1 $(EE_VPKD).ZIP
+	$(MAKE) VMC=1 GSM=1 IGS=1 PADEMU=1 CHEAT=1 HIRES=1 $(EE_VPKD).zip
 
 childproof:
 	$(MAKE) CHILDPROOF=1 all
@@ -361,7 +361,7 @@ $(EE_BIN_PACKED): $(EE_BIN_STRIPPED)
 $(EE_VPKD).ELF: $(EE_BIN_PACKED)
 	cp -f $< $@
 
-$(EE_VPKD).ZIP: $(EE_VPKD).ELF DETAILED_CHANGELOG CREDITS LICENSE README.md
+$(EE_VPKD).zip: $(EE_VPKD).ELF DETAILED_CHANGELOG CREDITS LICENSE README.md
 	zip -r $@ $^
 	echo "Package Complete: $@"
 
