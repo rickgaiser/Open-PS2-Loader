@@ -89,7 +89,9 @@ atlas_t *atlasNew(size_t width, size_t height, u8 psm)
     atlas->surface.Width = width;
     atlas->surface.Height = height;
 
-    atlas->surface.Filter = GS_FILTER_LINEAR;
+    // FreeType should render a pixel perfect font,
+    // so don't use GS_FILTER_LINEAR for this one.
+    atlas->surface.Filter = GS_FILTER_NEAREST;
 
     size_t txtsize = gsKit_texture_size(width, height, psm);
     atlas->surface.PSM = psm;
