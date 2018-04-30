@@ -49,7 +49,7 @@ before_script:
   - cd ${TRAVIS_ENV_DIR}
   - mkdir ps2dev-repo
   - cd ps2dev-repo
-  - repo init -u https://github.com/rickgaiser/ps2dev-repo -b master --depth=1
+  - repo init -u https://github.com/rickgaiser/ps2dev-repo -b bdm --depth=1
   - repo sync -j4 -c --no-tags
 
   ## ps2dev/ps2toolchain
