@@ -238,7 +238,7 @@ endif
 release:
 	echo "Building Open PS2 Loader $(OPL_VERSION)..."
 	echo "-Interface"
-	$(MAKE) VMC=1 GSM=1 IGS=1 PADEMU=1 CHEAT=1 HIRES=0 $(EE_VPKD).ZIP
+	$(MAKE) VMC=1 GSM=1 IGS=1 PADEMU=1 CHEAT=1 HIRES=1 $(EE_VPKD).ZIP
 
 childproof:
 	$(MAKE) CHILDPROOF=1 all
