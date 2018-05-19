@@ -115,7 +115,7 @@ void usbLoadModules(void)
     }
 
     // Load Block Device Manager and VFAT (mass:) driver
-    sysLoadModuleBuffer(&bdm_irx, size_bdm_irx, 0, NULL);
+    //sysLoadModuleBuffer(&bdm_irx, size_bdm_irx, 0, NULL);
     sysLoadModuleBuffer(&bdmfs_vfat_irx, size_bdmfs_vfat_irx, 0, NULL);
 
     // Load USB Block Device drivers

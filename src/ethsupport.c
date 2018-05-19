@@ -17,6 +17,9 @@
 #include "include/nbns.h"
 #include "httpclient.h"
 
+extern void *bdm_irx;
+extern int size_bdm_irx;
+
 extern void *smb_cdvdman_irx;
 extern int size_smb_cdvdman_irx;
 
@@ -285,6 +288,8 @@ static int ethLoadModules(void)
         ethModulesLoaded = 1;
 
         sysInitDev9();
+
+        sysLoadModuleBuffer(&bdm_irx, size_bdm_irx, 0, NULL);
 
         if (sysLoadModuleBuffer(&netman_irx, size_netman_irx, 0, NULL) >= 0) {
             NetManInit();
