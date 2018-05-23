@@ -127,7 +127,9 @@ void usbLoadModules(void)
     sysLoadModuleBuffer(&IEEE1394_bd_irx, size_IEEE1394_bd_irx, 0, NULL);
 
     // Load SIO2SD Block Device drivers
-    sysLoadModuleBuffer(&sio2sd_bd_irx, size_sio2sd_bd_irx, 0, NULL);
+    // NOTE: the sio2sd driver only works on a FAT console with an adapter inserted
+    //       uncomment the line below to enable the driver.
+    //sysLoadModuleBuffer(&sio2sd_bd_irx, size_sio2sd_bd_irx, 0, NULL);
 
     sysLoadModuleBuffer(&usbhdfsdfsv_irx, size_usbhdfsdfsv_irx, 0, NULL);
     SifAddCmdHandler(0, &usbEventHandler, NULL);
