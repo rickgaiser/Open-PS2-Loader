@@ -20,9 +20,6 @@ extern int size_usb_cdvdman_irx;
 extern void *usbd_irx;
 extern int size_usbd_irx;
 
-extern void *bdm_irx;
-extern int size_bdm_irx;
-
 extern void *bdmfs_vfat_irx;
 extern int size_bdmfs_vfat_irx;
 
@@ -114,8 +111,9 @@ void usbLoadModules(void)
         }
     }
 
-    // Load Block Device Manager and VFAT (mass:) driver
-    //sysLoadModuleBuffer(&bdm_irx, size_bdm_irx, 0, NULL);
+    // NOTE: BDM driver already loaded during sysReset()
+
+    // Load VFAT (mass:) driver
     sysLoadModuleBuffer(&bdmfs_vfat_irx, size_bdmfs_vfat_irx, 0, NULL);
 
     // Load USB Block Device drivers
@@ -485,6 +483,8 @@ static void usbLaunchGame(int id, config_set_t *configSet)
         sysLaunchLoaderElf(filename, "ILINK_MODE", irx_size, irx, USB_MCEMU EnablePS2Logo, compatmask);
     else if (!strcmp(bdmDriver, "sdc") && strlen(bdmDriver) == 3)
         sysLaunchLoaderElf(filename, "SIO2SD_MODE", irx_size, irx, USB_MCEMU EnablePS2Logo, compatmask);
+    else if (!strcmp(bdmDriver, "udp") && strlen(bdmDriver) == 3)
+        sysLaunchLoaderElf(filename, "UDP_MODE", irx_size, irx, USB_MCEMU EnablePS2Logo, compatmask);
 }
 
 static config_set_t *usbGetConfig(int id)

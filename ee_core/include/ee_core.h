@@ -74,7 +74,8 @@ enum GAME_MODE {
     ETH_MODE,
     HDD_MODE,
     ILINK_MODE,
-    SIO2SD_MODE
+    SIO2SD_MODE,
+    UDP_MODE
 };
 
 char ExitPath[32];

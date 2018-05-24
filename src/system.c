@@ -41,6 +41,9 @@ extern int size_genvmc_irx;
 #include "include/pgcht.h"
 #endif
 
+extern void *bdm_irx;
+extern int size_bdm_irx;
+
 extern void *udnl_irx;
 extern int size_udnl_irx;
 
@@ -288,6 +291,7 @@ void sysReset(int modload_mask)
     // load modules
     sysLoadModuleBuffer(&iomanx_irx, size_iomanx_irx, 0, NULL);
     sysLoadModuleBuffer(&filexio_irx, size_filexio_irx, 0, NULL);
+    sysLoadModuleBuffer(&bdm_irx, size_bdm_irx, 0, NULL);
 
 #ifdef _DTL_T10000
     SifExecModuleBuffer(&sio2man_irx, size_sio2man_irx, 0, NULL, NULL);
@@ -496,7 +500,7 @@ static unsigned int sendIrxKernelRAM(unsigned int modules, void *ModuleStorage, 
         irxptr_tab[modcount++].ptr = (void *)&sio2sd_bd_irx;
     }
     if (modules & CORE_IRX_ETH) {
-#ifdef __DECI2_DEBUG //FIXME: I don't know why, but the ingame SMAP driver cannot be used with the DECI2 modules. Perhaps that old bug with the network stack become unresponsive gets triggered? Until this is solved, use the normal SMAP driver.
+#if 1//def __DECI2_DEBUG //FIXME: I don't know why, but the ingame SMAP driver cannot be used with the DECI2 modules. Perhaps that old bug with the network stack become unresponsive gets triggered? Until this is solved, use the normal SMAP driver.
         irxptr_tab[modcount].info = size_smap_irx | SET_OPL_MOD_ID(OPL_MODULE_ID_SMAP);
         irxptr_tab[modcount++].ptr = (void *)&smap_irx;
 #else
@@ -740,6 +744,8 @@ void sysLaunchLoaderElf(char *filename, char *mode_str, int size_cdvdman_irx, vo
         modules = CORE_IRX_SIO2SD;
     else if (!strcmp(mode_str, "ETH_MODE"))
         modules = CORE_IRX_ETH | CORE_IRX_SMB;
+    else if (!strcmp(mode_str, "UDP_MODE"))
+        modules = CORE_IRX_ETH;
     else
         modules = CORE_IRX_HDD;
 

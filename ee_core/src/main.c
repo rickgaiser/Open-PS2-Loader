@@ -41,6 +41,8 @@ int main(int argc, char **argv)
         GameMode = ILINK_MODE;
     else if (!_strncmp(argv[i], "SIO2SD_MODE", 11))
         GameMode = SIO2SD_MODE;
+    else if (!_strncmp(argv[i], "UDP_MODE", 8))
+        GameMode = UDP_MODE;
     DPRINTF("Game Mode = %d\n", GameMode);
 
     DisableDebug = 0;
