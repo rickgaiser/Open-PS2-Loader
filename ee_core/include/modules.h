@@ -12,7 +12,7 @@ enum OPL_MODULE_ID {
     OPL_MODULE_ID_ILINK,
     OPL_MODULE_ID_ILINKBD,
 
-    //sdCard mode modules
+    //sio2sd mode modules
     OPL_MODULE_ID_SIO2SDBD,
 
     //SMB mode modules
