@@ -36,17 +36,10 @@ struct block_device* g_bd = NULL;
 static u32 g_bd_sectors_per_sector = 4;
 
 extern struct irx_export_table _exp_bdm;
-#ifdef __USE_DEV9
-extern struct irx_export_table _exp_dev9;
-#endif
 
 void DeviceInit(void)
 {
     RegisterLibraryEntries(&_exp_bdm);
-#ifdef __USE_DEV9
-    RegisterLibraryEntries(&_exp_dev9);
-    dev9d_init();
-#endif
 }
 
 void DeviceDeinit(void)

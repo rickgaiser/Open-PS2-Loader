@@ -31,7 +31,6 @@
 
 extern struct cdvdman_settings_hdd cdvdman_settings;
 
-extern struct irx_export_table _exp_dev9;
 extern struct irx_export_table _exp_atad;
 
 char lba_48bit = 0;
@@ -61,22 +60,8 @@ static int cdvdman_get_part_specs(u32 lsn)
 
 void DeviceInit(void)
 {
-#ifdef HD_PRO
-#ifdef __IOPCORE_DEBUG
-    RegisterLibraryEntries(&_exp_dev9);
-#endif
-#else
-    RegisterLibraryEntries(&_exp_dev9);
-#endif
     RegisterLibraryEntries(&_exp_atad);
 
-#ifdef HD_PRO
-#ifdef __IOPCORE_DEBUG
-    dev9d_init();
-#endif
-#else
-    dev9d_init();
-#endif
     atad_start();
     atad_inited = 1;
 

@@ -80,6 +80,9 @@ extern struct irx_export_table _exp_smsutils;
 #ifdef VMC_DRIVER
 extern struct irx_export_table _exp_oplutils;
 #endif
+#ifdef __USE_DEV9
+extern struct irx_export_table _exp_dev9;
+#endif
 
 struct dirTocEntry
 {
@@ -1813,6 +1816,11 @@ int _start(int argc, char **argv)
     RegisterLibraryEntries(&_exp_cdvdstm);
 
     RegisterLibraryEntries(&_exp_smsutils);
+#ifdef __USE_DEV9
+    RegisterLibraryEntries(&_exp_dev9);
+    dev9d_init();
+#endif
+
     DeviceInit();
 
 #ifdef VMC_DRIVER
