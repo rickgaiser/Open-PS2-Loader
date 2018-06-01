@@ -41,6 +41,9 @@ extern int size_genvmc_irx;
 #include "include/pgcht.h"
 #endif
 
+extern void *netman_irx;
+extern int size_netman_irx;
+
 extern void *bdm_irx;
 extern int size_bdm_irx;
 
@@ -448,6 +451,7 @@ void sysExecExit()
 #define CORE_IRX_DECI2 0x40
 #define CORE_IRX_ILINK 0x80
 #define CORE_IRX_SIO2SD 0x100
+#define CORE_IRX_ETHX 0x200
 
 #ifdef VMC
 static unsigned int sendIrxKernelRAM(unsigned int modules, void *ModuleStorage, int size_cdvdman_irx, void **cdvdman_irx, int size_mcemu_irx, void **mcemu_irx)
@@ -499,16 +503,19 @@ static unsigned int sendIrxKernelRAM(unsigned int modules, void *ModuleStorage, 
         irxptr_tab[modcount].info = size_sio2sd_bd_irx | SET_OPL_MOD_ID(OPL_MODULE_ID_SIO2SDBD);
         irxptr_tab[modcount++].ptr = (void *)&sio2sd_bd_irx;
     }
-    if (modules & CORE_IRX_ETH) {
-#if 1//def __DECI2_DEBUG //FIXME: I don't know why, but the ingame SMAP driver cannot be used with the DECI2 modules. Perhaps that old bug with the network stack become unresponsive gets triggered? Until this is solved, use the normal SMAP driver.
+    if (modules & CORE_IRX_ETHX) {
+        irxptr_tab[modcount].info = size_netman_irx | SET_OPL_MOD_ID(OPL_MODULE_ID_NETMAN);
+        irxptr_tab[modcount++].ptr = (void *)&netman_irx;
         irxptr_tab[modcount].info = size_smap_irx | SET_OPL_MOD_ID(OPL_MODULE_ID_SMAP);
         irxptr_tab[modcount++].ptr = (void *)&smap_irx;
-#else
+    }
+    if (modules & CORE_IRX_ETH) {
         irxptr_tab[modcount].info = size_smap_ingame_irx | SET_OPL_MOD_ID(OPL_MODULE_ID_SMAP);
         irxptr_tab[modcount++].ptr = (void *)&smap_ingame_irx;
-#endif
         irxptr_tab[modcount].info = size_ingame_smstcpip_irx | SET_OPL_MOD_ID(OPL_MODULE_ID_SMSTCPIP);
         irxptr_tab[modcount++].ptr = (void *)&ingame_smstcpip_irx;
+    }
+    if (modules & CORE_IRX_SMB) {
         irxptr_tab[modcount].info = size_smbinit_irx | SET_OPL_MOD_ID(OPL_MODULE_ID_SMBINIT);
         irxptr_tab[modcount++].ptr = (void *)&smbinit_irx;
     }
@@ -745,7 +752,7 @@ void sysLaunchLoaderElf(char *filename, char *mode_str, int size_cdvdman_irx, vo
     else if (!strcmp(mode_str, "ETH_MODE"))
         modules = CORE_IRX_ETH | CORE_IRX_SMB;
     else if (!strcmp(mode_str, "UDP_MODE"))
-        modules = CORE_IRX_ETH;
+        modules = CORE_IRX_ETHX;
     else
         modules = CORE_IRX_HDD;
 

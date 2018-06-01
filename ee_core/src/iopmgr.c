@@ -89,7 +89,6 @@ static void ResetIopSpecial(const char *args, unsigned int arglen)
         LoadOPLModule(OPL_MODULE_ID_USBD, 0, 11, "thpri=15,16");
         LoadOPLModule(OPL_MODULE_ID_USBMASS, 0, 0, NULL);
         break;
-    case UDP_MODE:
     case ETH_MODE:
         LoadOPLModule(OPL_MODULE_ID_SMSTCPIP, 0, 0, NULL);
         LoadOPLModule(OPL_MODULE_ID_SMAP, 0, g_ipconfig_len, g_ipconfig);
@@ -103,6 +102,10 @@ static void ResetIopSpecial(const char *args, unsigned int arglen)
         break;
     case SIO2SD_MODE:
         LoadOPLModule(OPL_MODULE_ID_SIO2SDBD, 0, 0, NULL);
+        break;
+    case UDP_MODE:
+        LoadOPLModule(OPL_MODULE_ID_NETMAN, 0, 0, NULL);
+        LoadOPLModule(OPL_MODULE_ID_SMAP, 0, 0, NULL);
         break;
     };
 
