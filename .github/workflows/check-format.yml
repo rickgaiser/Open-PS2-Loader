@@ -7,7 +7,7 @@ on:
 jobs:
   check-format:
     runs-on: ubuntu-latest
-    container: ps2dev/ps2dev:latest
+    container: ps2dev/ps2dev:experimental
     steps:
     - name: Install dependencies
       run: |

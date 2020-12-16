@@ -9,7 +9,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: ps2dev/ps2dev:latest
+    container: ps2dev/ps2dev:experimental
     steps:
     - name: Install dependencies
       run: |
@@ -48,7 +48,7 @@ jobs:
 
   build-variants:
     runs-on: ubuntu-latest
-    container: ps2dev/ps2dev:latest
+    container: ps2dev/ps2dev:experimental
     strategy:
       matrix:
         rtl: ["", RTL=1]
