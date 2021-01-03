@@ -22,7 +22,7 @@ jobs:
 
     - name: Compile -> make clean release
       run: |
-        make --trace clean release
+        make LOCALVERSION=gcc10 --trace clean release
 
     - name: Create detailed changelog
       run: sh ./make_changelog.sh
@@ -67,11 +67,11 @@ jobs:
 
     - name: Get version
       id: version
-      run: echo "::set-output name=version::$(make oplversion)"
+      run: echo "::set-output name=version::$(make LOCALVERSION=gcc10 oplversion)"
 
     - name: Compile -> make ${{ matrix.t10k }} ${{ matrix.igs }} ${{ matrix.pademu }} ${{ matrix.rtl }} NOT_PACKED=1
       run: |
-        make --trace ${{ matrix.t10k }} ${{ matrix.igs }} ${{ matrix.pademu }} ${{ matrix.rtl }} NOT_PACKED=1
+        make LOCALVERSION=gcc10 --trace ${{ matrix.t10k }} ${{ matrix.igs }} ${{ matrix.pademu }} ${{ matrix.rtl }} NOT_PACKED=1
         mv opl.elf OPNPS2LD-${{ steps.version.outputs.version }}-${{ matrix.t10k }}-${{ matrix.igs }}-${{ matrix.pademu }}-${{ matrix.rtl }}.ELF
 
     - name: Create detailed changelog
@@ -97,7 +97,7 @@ jobs:
 
     - name: Get version
       id: version
-      run: echo "::set-output name=version::$(make oplversion)"
+      run: echo "::set-output name=version::$(make LOCALVERSION=gcc10 oplversion)"
 
     - name: Download release artifact
       uses: actions/download-artifact@v1
@@ -122,12 +122,12 @@ jobs:
         7z a -t7z OPNPS2LD-VARIANTS-${{ steps.version.outputs.version }}.7z OPNPS2LD-VARIANTS/*
 
     - name: Create prerelease
-      if: github.ref == 'refs/heads/master'
+      if: github.ref == 'refs/heads/gcc10'
       uses: marvinpinto/action-automatic-releases@latest
       with:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
         prerelease: true
-        automatic_release_tag: "latest"
+        automatic_release_tag: "latest-gcc10"
         title: "${{ steps.version.outputs.version }}"
         files: |
           OPNPS2LD-${{ steps.version.outputs.version }}.7z
