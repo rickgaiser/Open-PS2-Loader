@@ -88,7 +88,7 @@ jobs:
   release:
     needs: [build, build-variants]
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/master'
+    if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/gcc10'
     steps:
     - name: git checkout
       uses: actions/checkout@v2
