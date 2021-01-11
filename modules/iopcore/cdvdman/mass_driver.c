@@ -1026,16 +1026,18 @@ int mass_stor_ReadCD(unsigned int lsn, unsigned int nsectors, void *buf, int par
 
     //Phase 2: read as much of the remaining sectors as possible
     DiskSectorsToRead = nsectors * 2048 / g_mass_device.sectorSize;
-    if (DiskSectorsToRead > 0) {
-        sectorsToRead = DiskSectorsToRead * g_mass_device.sectorSize / 2048; //Compute the number of CD-ROM/DVD sectors that will be read.
+    while (DiskSectorsToRead > 0) {
+        u32 sr = DiskSectorsToRead > 128 ? 128 : DiskSectorsToRead;
+        sectorsToRead = sr * g_mass_device.sectorSize / 2048; //Compute the number of CD-ROM/DVD sectors that will be read.
         nbytes = sectorsToRead * 2048;
 
-        mass_stor_readSector(lba, DiskSectorsToRead, p);
+        mass_stor_readSector(lba, sr, p);
 
-        lba += DiskSectorsToRead;
+        lba += sr;
         lsn += sectorsToRead;
         p += nbytes;
         nsectors -= sectorsToRead;
+        DiskSectorsToRead -= sr;
     }
 
     //Phase 3: read any outstanding amount of data (sector sizes > 2048)
