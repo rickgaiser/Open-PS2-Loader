@@ -87,7 +87,7 @@ void test_read_file(const char *filename)
 }
 
 //--------------------------------------------------------------
-void test_read_stream_1(const char *filename, unsigned int block_size, unsigned int total_size)
+void test_read_stream_1(uint32_t lsn, unsigned int block_size, unsigned int total_size)
 {
     void *iopbuffer = SifAllocIopHeap(STREAM_BUFMAX * 2048);
     void *eebuffer = malloc(block_size);
@@ -95,21 +95,17 @@ void test_read_stream_1(const char *filename, unsigned int block_size, unsigned 
     unsigned int size_left = total_size;
 
     clock_t clk_start, clk_end;
-    sceCdRMode mode = {1, SCECdSpinStm, SCECdSecS2048, 0};
-    sceCdlFILE fp;
+    sceCdRMode mode = {1, 1, SCECdSecS2048, 0};
     u32 error;
 
-    if (sceCdStInit(STREAM_BUFMAX, STREAM_BANKMAX, iopbuffer) == 0) {
-        PRINTF("ERROR: sceCdStInit\n");
-        return;
-    }
-    if (sceCdSearchFile(&fp, filename) == 0) {
-        PRINTF("ERROR: sceCdSearchFile\n");
+    int rv = sceCdStInit(STREAM_BUFMAX, STREAM_BANKMAX, iopbuffer);
+    if (rv == 0) {
+        PRINTF("ERROR: sceCdStInit, rv=%d\n", rv);
         return;
     }
 
     clk_start = clock();
-    sceCdStStart(fp.lsn, &mode);
+    sceCdStStart(lsn, &mode);
     while (size_left) {
         int rv = sceCdStRead(sectors, eebuffer, STMBLK, &error);
         if (rv != sectors) {
@@ -129,12 +125,6 @@ void test_read_stream_1(const char *filename, unsigned int block_size, unsigned 
 
     free(eebuffer);
     SifFreeIopHeap(iopbuffer);
-}
-
-//--------------------------------------------------------------
-void test_read_stream(const char *filename)
-{
-    test_read_stream_1(filename, 16*1024, FILE_SIZE);
 }
 
 //--------------------------------------------------------------
@@ -159,63 +149,48 @@ void print_done()
 //--------------------------------------------------------------
 int main()
 {
+    int rv;
+
     init_scr();
+    scr_clear();
+    print_header();
 
     SifExitIopHeap();
     SifLoadFileExit();
     SifExitRpc();
 
     SifInitRpc(0);
-    // while (!SifIopReset("rom0:UDNL cdrom:\\IOPRP300.IMG", 0))
-    while (!SifIopReset("", 0))
+    while (!SifIopReset("rom0:UDNL cdrom0:\\MODULES\\IOPRP271.IMG;1", 0))
+    //while (!SifIopReset("", 0))
         ;
     while (!SifIopSync())
         ;
+
     SifInitRpc(0);
     SifLoadFileInit();
     SifInitIopHeap();
 
-    // Enable loading iop modules from EE memory
-    sbv_patch_enable_lmb();
-
-    // Load cdvdman
+    // Load cdvdstm
     // NOTE: on OPL this module will not be loaded
-    if (SifLoadModule("rom0:CDVDMAN", 0, 0) < 0)
-        PRINTF("\t\tcould not load %s\n", "rom0:CDVDMAN");
-
-    // Load cdvdfsv
-    // NOTE: on OPL this module will not be loaded
-    if (SifLoadModule("rom0:CDVDFSV", 0, 0) < 0)
-        PRINTF("\t\tcould not load %s\n", "rom0:CDVDFSV");
+    rv = SifLoadModule("cdrom:MODULES\\CDVDSTM.IRX", 0, NULL);
+    if (rv < 0)
+        PRINTF("\t\tcould not load %s, rv=%d\n", "cdrom:MODULES\\CDVDSTM.IRX", rv);
 
     sceCdInit(SCECdINIT);
     sceCdMmode(SCECdPS2DVD);
 
     // speed test random file
-    scr_clear();
-    print_header();
-    PRINTF("\t\tReading from 10 files located at 0 to 100%% of CD:\n");
-    test_read_file("cdrom:\\FILE0A.BIN;1");
-    test_read_file("cdrom:\\FILE1A.BIN;1");
-    test_read_file("cdrom:\\FILE2A.BIN;1");
-    test_read_file("cdrom:\\FILE3A.BIN;1");
-    test_read_file("cdrom:\\FILE4A.BIN;1");
-    test_read_file("cdrom:\\FILE5A.BIN;1");
-    test_read_file("cdrom:\\FILE6A.BIN;1");
-    test_read_file("cdrom:\\FILE7A.BIN;1");
-    test_read_file("cdrom:\\FILE8A.BIN;1");
-    test_read_file("cdrom:\\FILE9A.BIN;1");
-    PRINTF("\t\tStreaming from 10 files located at 0 to 100%% of CD:\n");
-    test_read_stream("\\FILE0A.BIN;1");
-    test_read_stream("\\FILE1A.BIN;1");
-    test_read_stream("\\FILE2A.BIN;1");
-    test_read_stream("\\FILE3A.BIN;1");
-    test_read_stream("\\FILE4A.BIN;1");
-    test_read_stream("\\FILE5A.BIN;1");
-    test_read_stream("\\FILE6A.BIN;1");
-    test_read_stream("\\FILE7A.BIN;1");
-    test_read_stream("\\FILE8A.BIN;1");
-    test_read_stream("\\FILE9A.BIN;1");
+    PRINTF("\t\tStreaming from 10 files located at 0 to 100%% of DVD:\n");
+    test_read_stream_1(0*262144, 16*1024, FILE_SIZE);
+    test_read_stream_1(1*262144, 16*1024, FILE_SIZE); // 0.5GiB
+    test_read_stream_1(2*262144, 16*1024, FILE_SIZE);
+    test_read_stream_1(3*262144, 16*1024, FILE_SIZE);
+    test_read_stream_1(4*262144, 16*1024, FILE_SIZE);
+    test_read_stream_1(5*262144, 16*1024, FILE_SIZE);
+    test_read_stream_1(6*262144, 16*1024, FILE_SIZE);
+    test_read_stream_1(7*262144, 16*1024, FILE_SIZE);
+    test_read_stream_1(8*262144, 16*1024, FILE_SIZE);
+    //test_read_stream_1(9*262144, 16*1024, FILE_SIZE); // 4.5GiB
     print_done();
 
     while (1) {}
