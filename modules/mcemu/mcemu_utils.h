@@ -49,6 +49,17 @@ void bdm_writeSector(u64 lba, unsigned short int nsectors, const unsigned char *
 
 #endif
 
+/* TODO: MMCE Transfer Imports current copy paste, BDM */
+#ifdef MMCE_DRIVER
+
+void mmce_readSector(unsigned int lba, unsigned short int nsectors, unsigned char *buffer);
+#define I_mmce_readSector DECLARE_IMPORT(6, mmce_readSector)
+
+void mmce_writeSector(unsigned int lba, unsigned short int nsectors, const unsigned char *buffer);
+#define I_mmce_writeSector DECLARE_IMPORT(7, mmce_writeSector)
+
+#endif
+
 /* ATAD Transfer Imports */
 #ifdef HDD_DRIVER
 
