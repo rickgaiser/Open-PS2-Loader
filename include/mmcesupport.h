@@ -1,0 +1,13 @@
+#ifndef __MMCE_SUPPORT_H
+#define __MMCE_SUPPORT_H
+
+#include "include/iosupport.h"
+
+#define MMCE_MODE_UPDATE_DELAY MENU_UPD_DELAY_GENREFRESH
+
+void mmceInit();
+item_list_t *mmceGetObject(int initOnly);
+void mmceLoadModules(void);
+void mmceLaunchGame(item_list_t *itemList, int fd, config_set_t *configSet);
+
+#endif
