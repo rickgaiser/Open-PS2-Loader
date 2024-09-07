@@ -9,24 +9,30 @@
 
 int DeviceWritePage(int mc_num, void *buf, u32 page_num)
 {
-    u32 lba;
+    u32 offset;
+    int vmc_fd;
 
-    //lba = vmcSpec[mc_num].stsec + page_num;
-    //DPRINTF("writing page 0x%lx at lba 0x%lx\n", page_num, lba);
+    offset = page_num * vmcSpec[mc_num].cspec.PageSize;
+    vmc_fd = vmcSpec[mc_num].fd;
 
-    mmce_writeSector(lba, 1, buf);
+    DPRINTF("writing page 0x%lx at offset 0x%lx\n", page_num, offset);
+
+    mmce_write_offset(vmc_fd, offset, vmcSpec[mc_num].cspec.PageSize, buf);
 
     return 1;
 }
 
 int DeviceReadPage(int mc_num, void *buf, u32 page_num)
 {
-    u32 lba;
+    u32 offset;
+    int vmc_fd;
 
-    //lba = vmcSpec[mc_num].stsec + page_num;
-    //DPRINTF("reading page 0x%lx at lba 0x%lx\n", page_num, lba);
+    offset = page_num * vmcSpec[mc_num].cspec.PageSize;
+    vmc_fd = vmcSpec[mc_num].fd;
 
-    mmce_readSector(lba, 1, buf);
+    DPRINTF("reading page 0x%lx at offset 0x%lx\n", page_num, offset);
+
+    mmce_read_offset(vmc_fd, offset, vmcSpec[mc_num].cspec.PageSize, buf);
 
     return 1;
 }
