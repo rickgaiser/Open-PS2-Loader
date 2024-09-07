@@ -12,10 +12,24 @@ extern struct cdvdman_settings_mmce cdvdman_settings;
 uint32_t (*fp_mmcedrv_get_size)();
 int (*fp_mmcedrv_read_sector)(int type, unsigned int sector_start, unsigned int sector_count, void *buffer);
 void (*fp_mmcedrv_config_set)(int setting, int value);
+int (*fp_mmcedrv_read)(int fd, int size, void *ptr);
+int (*fp_mmcedrv_write)(int fd, int size, void *ptr);
+int (*fp_mmcedrv_lseek)(int fd, int offset, int whence);
+
+static int mmce_io_sema;
 
 void DeviceInit(void)
 {
     DPRINTF("%s\n", __func__);
+
+    iop_sema_t sema;
+    sema.initial = 1;
+    sema.max = 1;
+    sema.option = 0;
+    sema.attr = SA_THPRI;
+    mmce_io_sema = CreateSema(&sema);
+
+    DPRINTF("Sema created: 0x%x\n", mmce_io_sema);
 }
 
 void DeviceDeinit(void)
@@ -31,7 +45,7 @@ int DeviceReady(void)
 
 void DeviceFSInit(void)
 {
-    uint64_t iso_size;
+    int64_t iso_size;
 
     // get modload export table
     modinfo_t info;
@@ -41,6 +55,9 @@ void DeviceFSInit(void)
     fp_mmcedrv_get_size = (void *)info.exports[4];
     fp_mmcedrv_read_sector = (void *)info.exports[5];
     fp_mmcedrv_config_set = (void *)info.exports[6];
+    fp_mmcedrv_read = (void *)info.exports[7];
+    fp_mmcedrv_write = (void *)info.exports[8];
+    fp_mmcedrv_lseek = (void *)info.exports[9];
 
     //Set port and iso fd
     DPRINTF("Port: %i\n", cdvdman_settings.port);
@@ -58,12 +75,13 @@ void DeviceFSInit(void)
         DelayThread(100 * 1000); // 100ms
     }
 
-    DPRINTF("Waiting for device...done! connected to %llu byte iso\n", iso_size);
+    DPRINTF("Waiting for device...done! connected to %llu byte iso\n", (long long int)iso_size);
 }
 
 void DeviceLock(void)
 {
     DPRINTF("%s\n", __func__);
+    WaitSema(mmce_io_sema);
 }
 
 void DeviceUnmount(void)
@@ -84,11 +102,13 @@ int DeviceReadSectors(u32 lsn, void *buffer, unsigned int sectors)
     int dump = 0;
 
     DPRINTF("%s(%u, 0x%p, %u)\n", __func__, (unsigned int)lsn, buffer, sectors);
-
+    
+    WaitSema(mmce_io_sema);
     do {
         res = fp_mmcedrv_read_sector(MMCEDRV_TYPE_ISO, lsn, sectors, buffer);
         retries++;
     } while (res != sectors && retries < 3);
+    SignalSema(mmce_io_sema);
 
     if (retries == 3) {
         DPRINTF("%s: Failed to read after 3 retires, sector: %u, count: %u, buffer: 0x%p\n", __func__, lsn, sectors, buffer);
@@ -99,12 +119,26 @@ int DeviceReadSectors(u32 lsn, void *buffer, unsigned int sectors)
 }
 
 //TODO: For VMCs
-void mmce_readSector(unsigned int lba, unsigned short int nsectors, unsigned char *buffer)
+int mmce_read_offset(int fd, unsigned int offset, unsigned int size, unsigned char *buffer)
 {
     DPRINTF("%s\n", __func__);
+
+    WaitSema(mmce_io_sema);
+    fp_mmcedrv_lseek(fd, offset, 0);
+    fp_mmcedrv_read(fd, size, buffer);
+    SignalSema(mmce_io_sema);
+
+    return 1;
 }
 
-void mmce_writeSector(unsigned int lba, unsigned short int nsectors, const unsigned char *buffer)
+int mmce_write_offset(int fd, unsigned int offset, unsigned int size, const unsigned char *buffer)
 {
     DPRINTF("%s\n", __func__);
+
+    WaitSema(mmce_io_sema);
+    fp_mmcedrv_lseek(fd, offset, 0);
+    fp_mmcedrv_write(fd, size, buffer);
+    SignalSema(mmce_io_sema);
+
+    return 1;
 }

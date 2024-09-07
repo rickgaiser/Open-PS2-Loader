@@ -177,7 +177,7 @@ static void mmceRenameGame(item_list_t *itemList, int id, char *newName)
 
 void mmceLaunchGame(item_list_t *itemList, int id, config_set_t *configSet)
 {
-    int i, fd, iop_fd, index, compatmask = 0;
+    int i, index, compatmask = 0;
     int EnablePS2Logo = 0;
     int result;
 
@@ -200,26 +200,57 @@ void mmceLaunchGame(item_list_t *itemList, int id, config_set_t *configSet)
     if (settings == NULL)
         return;
 
-    char vmc_name[32], vmc_path[256], have_error = 0;
+    char vmc_name[32];
+    char vmc_path[256];
+    int vmc_size_mb;
     int vmc_id, size_mcemu_irx = 0;
+    int vmc_fd;
+    mmce_vmc_infos_t mmce_vmc_infos;
+    vmc_superblock_t vmc_superblock;
 
-    // Open file
-    sbCreatePath(game, partname, mmcePrefix, "/", i);
-    fd = open(partname, O_RDONLY);
-    iop_fd = ps2sdk_get_iop_fd(fd);
-    if (fd < 0) {
-        sbUnprepare(&settings->common);
-        guiMsgBox(_l(_STR_ERR_FILE_INVALID), 0, NULL);
-        return;
+    for (vmc_id = 0; vmc_id < 2; vmc_id++) {
+        memset(&mmce_vmc_infos, 0, sizeof(mmce_vmc_infos));
+        configGetVMC(configSet, vmc_name, sizeof(vmc_name), vmc_id);
+        if (vmc_name[0]) {
+            vmc_size_mb = sysCheckVMC(mmcePrefix, "/", vmc_name, 0, &vmc_superblock);
+            if (vmc_size_mb > 0) {
+                mmce_vmc_infos.flags = vmc_superblock.mc_flag & 0xFF;
+                mmce_vmc_infos.flags |= 0x100;
+                mmce_vmc_infos.specs.page_size = vmc_superblock.page_size;
+                mmce_vmc_infos.specs.block_size = vmc_superblock.pages_per_block;
+                mmce_vmc_infos.specs.card_size = vmc_superblock.pages_per_cluster * vmc_superblock.clusters_per_card;
+
+                sprintf(vmc_path, "%sVMC/%s.bin", mmcePrefix, vmc_name);
+
+                vmc_fd = open(vmc_path, O_RDWR);
+                if (vmc_fd >= 0) {
+                    mmce_vmc_infos.fd = fileXioIoctl2(vmc_fd, 0x80, NULL, 0, NULL, 0);
+                    mmce_vmc_infos.active = 1;
+                }
+            }
+        }
+
+        for (i = 0; i < size_mmce_mcemu_irx; i++) {
+            if (((u32 *)&mmce_mcemu_irx)[i] == (0xC0DEFAC0 + vmc_id)) {
+                if (mmce_vmc_infos.active)
+                    size_mcemu_irx = size_mmce_mcemu_irx;
+                memcpy(&((u32 *)&mmce_mcemu_irx)[i], &mmce_vmc_infos, sizeof(mmce_vmc_infos_t));
+                break;
+            }
+        }
     }
-
-    if ((gPS2Logo) && (i == 0))
-        EnablePS2Logo = CheckPS2Logo(fd, 0);
-
-    close(fd);
 
     // Initialize layer 1 information.
     sbCreatePath(game, partname, mmcePrefix, "/", 0);
+
+    if (gPS2Logo) {
+        int fd = open(partname, O_RDONLY, 0666);
+        if (fd >= 0) {
+            EnablePS2Logo = CheckPS2Logo(fd, 0);
+            close(fd);
+        }
+    }
+
     layer1_start = sbGetISO9660MaxLBA(partname);
 
     switch (game->format) {
@@ -263,8 +294,7 @@ void mmceLaunchGame(item_list_t *itemList, int id, config_set_t *configSet)
     if (configGetStrCopy(configSet, CONFIG_ITEM_ALTSTARTUP, filename, sizeof(filename)) == 0)
         strcpy(filename, game->startup);
 
-
-    //MMCEDRV settings    
+    //MMCEDRV settings
     if (gMMCESlot == 0)
         settings->port = 2;
     else if (gMMCESlot == 1)
@@ -272,12 +302,16 @@ void mmceLaunchGame(item_list_t *itemList, int id, config_set_t *configSet)
 
     int iso_file = fileXioOpen(partname, 0x1, 0666);
     if (iso_file < 0) {
-        printf("Failed to reopen iso, aborting\n");
+        LOG("Failed to open iso, aborting\n");
         return;
     }
 
-    printf("name: %s\n", game->name);
-    printf("start: %s\n", game->startup);
+    //TEMP: The fd given by sd2psx is not the same one we see here on the EE
+    //and ps2sdk_get_iop_fd does not seem to return the right value either
+    settings->iso_fd = fileXioIoctl2(iso_file, 0x80, NULL, 0, NULL, 0);
+
+    LOG("name: %s\n", game->name);
+    LOG("start: %s\n", game->startup);
 
     //Set gameid and poll card until ready
     if (gMMCEEnableGameID) {
@@ -286,19 +320,15 @@ void mmceLaunchGame(item_list_t *itemList, int id, config_set_t *configSet)
         for (int i = 0; i < 15; i++){
             sleep(1);
             if (fileXioDevctl(mmcePrefix, 0x1, NULL, 0, NULL, 0) != -1){
-                printf("Set MMCE GameID to: %s\n", game->startup);
+                LOG("Set MMCE GameID to: %s\n", game->startup);
                 break;
             }
         }
     }
 
-    //TEMP: The fd given by sd2psx is not the same one we see here on the EE
-    //and ps2sdk_get_iop_fd does not seem to return the right value either
-    settings->iso_fd = fileXioIoctl2(iso_file, 0x80, NULL, 0, NULL, 0);
-
     if (gAutoLaunchBDMGame == NULL)
         deinit(NO_EXCEPTION, MMCE_MODE); // CAREFUL: deinit will call mmceCleanUp, so mmceGames/game will be freed
-    
+
     /* No autolaunch yet
     else {
         miniDeinit(configSet);
@@ -381,7 +411,7 @@ static char *mmceGetPrefix(void)
 static item_list_t mmceGameList = {
     MMCE_MODE, 2, 0, 0, MENU_MIN_INACTIVE_FRAMES, MMCE_MODE_UPDATE_DELAY, NULL, NULL, &mmceGetTextId, &mmceGetPrefix, &mmceInit, &mmceNeedsUpdate,
     &mmceUpdateGameList, &mmceGetGameCount, &mmceGetGame, &mmceGetGameName, &mmceGetGameNameLength, &mmceGetGameStartup, &mmceDeleteGame, &mmceRenameGame,
-    &mmceLaunchGame, &mmceGetConfig, &mmceGetImage, &mmceCleanUp, &mmceShutdown, NULL, &mmceGetIconId};
+    &mmceLaunchGame, &mmceGetConfig, &mmceGetImage, &mmceCleanUp, &mmceShutdown, &mmceCheckVMC, &mmceGetIconId};
 
 void mmceInitSemaphore()
 {
