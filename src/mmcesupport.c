@@ -326,6 +326,8 @@ void mmceLaunchGame(item_list_t *itemList, int id, config_set_t *configSet)
         }
     }
 
+    mcReset();
+
     if (gAutoLaunchBDMGame == NULL)
         deinit(NO_EXCEPTION, MMCE_MODE); // CAREFUL: deinit will call mmceCleanUp, so mmceGames/game will be freed
 
@@ -403,7 +405,7 @@ static int mmceCheckVMC(item_list_t *itemList, char *name, int createSize)
     return sysCheckVMC(mmcePrefix, "/", name, createSize, NULL);
 }
 
-static char *mmceGetPrefix(void)
+static char *mmceGetPrefix(item_list_t *itemList)
 {
     return mmcePrefix;
 }
