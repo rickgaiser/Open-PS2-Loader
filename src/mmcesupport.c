@@ -91,11 +91,11 @@ static int mmceNeedsUpdate(item_list_t *itemList)
 
     if (mmceULSizePrev == -2)
         result = 1;
-    
+
     sprintf(path, "%sCD", mmcePrefix);
     if (stat(path, &st) != 0)
         st.st_mtime = 0;
-    
+
     if (mmceModifiedCDPrev != st.st_mtime) {
         mmceModifiedCDPrev = st.st_mtime;
         result = 1;
@@ -327,6 +327,8 @@ void mmceLaunchGame(item_list_t *itemList, int id, config_set_t *configSet)
     }
 
     mcReset();
+    mcInit(MC_TYPE_XMC);
+
 
     if (gAutoLaunchBDMGame == NULL)
         deinit(NO_EXCEPTION, MMCE_MODE); // CAREFUL: deinit will call mmceCleanUp, so mmceGames/game will be freed
