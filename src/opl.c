@@ -1753,7 +1753,7 @@ static void setDefaults(void)
     gAPPStartMode = START_MODE_DISABLED;
     gMMCEStartMode = START_MODE_DISABLED;
 
-    gMMCESlot = 0; //Default to first MC slot
+    gMMCESlot = 2; //Default to first Auto slot
     gMMCEEnableGameID = 1;
     gEnableILK = 0;
     gEnableMX4SIO = 0;

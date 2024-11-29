@@ -847,9 +847,11 @@ void guiShowMMCEConfig()
 {
     int ret;
     const char *deviceModes[] = {_l(_STR_OFF), _l(_STR_MANUAL), _l(_STR_AUTO), NULL};
+    const char *deviceSlots[] = {"0", "1", _l(_STR_AUTO), NULL};
 
     diaSetEnum(diaMMCEConfig, CFG_MMCEMODE, deviceModes);
     diaSetInt(diaMMCEConfig, CFG_MMCEMODE, gMMCEStartMode);
+    diaSetEnum(diaMMCEConfig, CFG_MMCESLOT, deviceSlots);
     diaSetInt(diaMMCEConfig, CFG_MMCESLOT, gMMCESlot);
     diaSetInt(diaMMCEConfig, CFG_MMCEGAMEID, gMMCEEnableGameID);
 

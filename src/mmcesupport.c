@@ -30,13 +30,29 @@ static int last_slot = -1;
 // forward declaration
 static item_list_t mmceGameList;
 
+int mmceDetectSlot(void)
+{
+    int ret = -1;
+    if (fileXioDevctl("mmce0:/", 0x1, NULL, 0, NULL, 0) != -1) {
+        sprintf(mmcePrefix, "mmce0:/");
+        ret = 2;
+    } else if (fileXioDevctl("mmce1:/", 0x1, NULL, 0, NULL, 0) != -1) {
+        sprintf(mmcePrefix, "mmce1:/");
+        ret = 3;
+    }
+    return ret;
+}
+
 void mmceSetPrefix(void)
 {
-    if (last_slot != gMMCESlot) {
+    if (last_slot != gMMCESlot)
+    {
         if (gMMCESlot == 0)
             sprintf(mmcePrefix, "mmce0:/");
         else if (gMMCESlot == 1)
             sprintf(mmcePrefix, "mmce1:/");
+        else if (gMMCESlot == 2)
+            (void)mmceDetectSlot();
 
         last_slot = gMMCESlot;
     }
@@ -62,6 +78,8 @@ void mmceInit(item_list_t *itemList)
         sprintf(mmcePrefix, "mmce0:/");
     else if (gMMCESlot == 1)
         sprintf(mmcePrefix, "mmce1:/");
+    else if (gMMCESlot == 2)
+        mmceDetectSlot();
 
     configGetInt(configGetByType(CONFIG_OPL), "usb_frames_delay", &mmceGameList.delay);
     mmceGameList.updateDelay = -1; //No automatic updates
@@ -299,6 +317,8 @@ void mmceLaunchGame(item_list_t *itemList, int id, config_set_t *configSet)
         settings->port = 2;
     else if (gMMCESlot == 1)
         settings->port = 3;
+    else if (gMMCESlot == 2)
+        settings->port = mmceDetectSlot();
 
     int iso_file = fileXioOpen(partname, 0x1, 0666);
     if (iso_file < 0) {
