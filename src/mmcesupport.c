@@ -334,17 +334,23 @@ void mmceLaunchGame(item_list_t *itemList, int id, config_set_t *configSet)
     LOG("start: %s\n", game->startup);
 
     //Set gameid and poll card until ready
+#ifdef __DEBUG
     if (gMMCEEnableGameID) {
-        fileXioDevctl(mmcePrefix, 0x8, game->startup, (strlen(game->startup) + 1), NULL, 0);
+#endif
+    const char buf[255] = { 0x0 };
+    fileXioDevctl(mmcePrefix, 0x8, game->startup, (strlen(game->startup) + 1), NULL, 0);
 
-        for (int i = 0; i < 15; i++){
-            sleep(1);
-            if (fileXioDevctl(mmcePrefix, 0x1, NULL, 0, NULL, 0) != -1){
-                LOG("Set MMCE GameID to: %s\n", game->startup);
-                break;
-            }
+    for (int i = 0; i < 15; i++) {
+        sleep(1);
+        if ((fileXioDevctl(mmcePrefix, 0x1, NULL, 0, buf, sizeof(buf)) != -1)
+            && (buf[0] != 0x00)) {
+            LOG("Set MMCE GameID to: %s\n", game->startup);
+            break;
         }
     }
+#ifdef __DEBUG
+    }
+#endif
 
     mcReset();
     mcInit(MC_TYPE_XMC);
