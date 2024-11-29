@@ -946,7 +946,9 @@ static void _loadConfig()
             configGetInt(configOPL, CONFIG_OPL_APP_MODE, &gAPPStartMode);
             configGetInt(configOPL, CONFIG_OPL_MMCE_MODE, &gMMCEStartMode);
             configGetInt(configOPL, CONFIG_OPL_MMCE_SLOT, &gMMCESlot);
+#ifdef __DEBUG
             configGetInt(configOPL, CONFIG_OPL_MMCE_GAMEID, &gMMCEEnableGameID);
+#endif
             configGetInt(configOPL, CONFIG_OPL_ENABLE_ILINK, &gEnableILK);
             configGetInt(configOPL, CONFIG_OPL_ENABLE_MX4SIO, &gEnableMX4SIO);
             configGetInt(configOPL, CONFIG_OPL_ENABLE_BDMHDD, &gEnableBdmHDD);
@@ -1106,7 +1108,9 @@ static void _saveConfig()
         configSetInt(configOPL, CONFIG_OPL_APP_MODE, gAPPStartMode);
         configSetInt(configOPL, CONFIG_OPL_MMCE_MODE, gMMCEStartMode);
         configSetInt(configOPL, CONFIG_OPL_MMCE_SLOT, gMMCESlot);
+#ifdef __DEBUG
         configSetInt(configOPL, CONFIG_OPL_MMCE_GAMEID, gMMCEEnableGameID);
+#endif
         configSetInt(configOPL, CONFIG_OPL_BDM_CACHE, bdmCacheSize);
         configSetInt(configOPL, CONFIG_OPL_HDD_CACHE, hddCacheSize);
         configSetInt(configOPL, CONFIG_OPL_SMB_CACHE, smbCacheSize);
@@ -1754,7 +1758,10 @@ static void setDefaults(void)
     gMMCEStartMode = START_MODE_DISABLED;
 
     gMMCESlot = 2; //Default to first Auto slot
+#ifdef __DEBUG
     gMMCEEnableGameID = 1;
+#endif
+
     gEnableILK = 0;
     gEnableMX4SIO = 0;
     gEnableBdmHDD = 0;
