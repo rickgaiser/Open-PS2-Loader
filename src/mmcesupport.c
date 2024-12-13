@@ -337,13 +337,15 @@ void mmceLaunchGame(item_list_t *itemList, int id, config_set_t *configSet)
 #ifdef __DEBUG
     if (gMMCEEnableGameID) {
 #endif
-    const char buf[255] = { 0x0 };
+
+    // Send GameID to MMCE 
     fileXioDevctl(mmcePrefix, 0x8, game->startup, (strlen(game->startup) + 1), NULL, 0);
 
     for (int i = 0; i < 15; i++) {
         sleep(1);
-        if ((fileXioDevctl(mmcePrefix, 0x1, NULL, 0, buf, sizeof(buf)) != -1)
-            && (buf[0] != 0x00)) {
+
+        // Poll MMCE status until busy bit is clear
+        if ((fileXioDevctl(mmcePrefix, 0x2, NULL, 0, NULL, 0) & 1) == 0) {
             LOG("Set MMCE GameID to: %s\n", game->startup);
             break;
         }
@@ -354,7 +356,6 @@ void mmceLaunchGame(item_list_t *itemList, int id, config_set_t *configSet)
 
     mcReset();
     mcInit(MC_TYPE_XMC);
-
 
     if (gAutoLaunchBDMGame == NULL)
         deinit(NO_EXCEPTION, MMCE_MODE); // CAREFUL: deinit will call mmceCleanUp, so mmceGames/game will be freed
