@@ -62,9 +62,12 @@ void DeviceFSInit(void)
     //Set port and iso fd
     DPRINTF("Port: %i\n", cdvdman_settings.port);
     DPRINTF("ISO fd: %i\n", cdvdman_settings.iso_fd);
+    DPRINTF("VMC fd: %i\n", cdvdman_settings.vmc_fd);
+    DPRINTF("SEMA enqueuing method: %i\n", cdvdman_settings.sema_enq_method);
 
     fp_mmcedrv_config_set(MMCEDRV_SETTING_PORT, cdvdman_settings.port);
     fp_mmcedrv_config_set(MMCEDRV_SETTING_ISO_FD, cdvdman_settings.iso_fd);
+    fp_mmcedrv_config_set(MMCEDRV_SETTING_SEMA_ENQ_METHOD, cdvdman_settings.sema_enq_method);
 
     DPRINTF("Waiting for device...\n");
 
