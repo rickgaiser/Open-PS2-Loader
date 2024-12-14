@@ -13,6 +13,7 @@ enum mmcedrv_settings {
     MMCEDRV_SETTING_PORT = 0x0,
     MMCEDRV_SETTING_ISO_FD = 0x1,
     MMCEDRV_SETTING_VMC_FD = 0x2,
+    MMCEDRV_SETTING_SEMA_ENQ_METHOD = 0x3,
 };
 
 /* Game and VMC's are to be opened by MMCEMAN

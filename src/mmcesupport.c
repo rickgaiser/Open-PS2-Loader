@@ -326,6 +326,8 @@ void mmceLaunchGame(item_list_t *itemList, int id, config_set_t *configSet)
         return;
     }
 
+    settings->sema_enq_method = gMMCESema;
+
     //TEMP: The fd given by sd2psx is not the same one we see here on the EE
     //and ps2sdk_get_iop_fd does not seem to return the right value either
     settings->iso_fd = fileXioIoctl2(iso_file, 0x80, NULL, 0, NULL, 0);
