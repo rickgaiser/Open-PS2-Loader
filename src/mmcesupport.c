@@ -25,8 +25,6 @@ static time_t mmceModifiedDVDPrev;
 static int mmceGameCount = 0;
 static base_game_info_t *mmceGames;
 
-static int last_slot = -1;
-
 // forward declaration
 static item_list_t mmceGameList;
 
@@ -45,17 +43,12 @@ int mmceDetectSlot(void)
 
 void mmceSetPrefix(void)
 {
-    if (last_slot != gMMCESlot)
-    {
-        if (gMMCESlot == 0)
-            sprintf(mmcePrefix, "mmce0:/");
-        else if (gMMCESlot == 1)
-            sprintf(mmcePrefix, "mmce1:/");
-        else if (gMMCESlot == 2)
-            (void)mmceDetectSlot();
-
-        last_slot = gMMCESlot;
-    }
+    if (gMMCESlot == 0)
+        sprintf(mmcePrefix, "mmce0:/");
+    else if (gMMCESlot == 1)
+        sprintf(mmcePrefix, "mmce1:/");
+    else if (gMMCESlot == 2)
+        (void)mmceDetectSlot();
 }
 
 void mmceLoadModules(void)
