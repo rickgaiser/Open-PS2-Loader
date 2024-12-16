@@ -67,6 +67,11 @@ void mmceInit(item_list_t *itemList)
     mmceGameCount = 0;
     mmceGames = NULL;
 
+    configGetInt(configGetByType(CONFIG_OPL), "usb_frames_delay", &mmceGameList.delay);
+    mmceGameList.updateDelay = -1; //No automatic updates
+
+    mmceLoadModules();
+
     if (gMMCESlot == 0)
         sprintf(mmcePrefix, "mmce0:/");
     else if (gMMCESlot == 1)
@@ -74,10 +79,6 @@ void mmceInit(item_list_t *itemList)
     else if (gMMCESlot == 2)
         mmceDetectSlot();
 
-    configGetInt(configGetByType(CONFIG_OPL), "usb_frames_delay", &mmceGameList.delay);
-    mmceGameList.updateDelay = -1; //No automatic updates
-
-    mmceLoadModules(); //Can we do this here?
     mmceGameList.enabled = 1;
 }
 
