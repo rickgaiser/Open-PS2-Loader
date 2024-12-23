@@ -848,7 +848,7 @@ void guiShowMMCEConfig()
     int ret;
     const char *deviceModes[] = {_l(_STR_OFF), _l(_STR_MANUAL), _l(_STR_AUTO), NULL};
     const char *deviceSlots[] = {"0", "1", _l(_STR_AUTO), NULL};
-    const char *semaEnqMethod[] = {"SA_THFIFO", "SA_THPRI", NULL};
+    const char *deviceAckWaitCycles[] = {"0", "1", "2", "3", "4", "5", NULL};
 
     diaSetEnum(diaMMCEConfig, CFG_MMCEMODE, deviceModes);
     diaSetInt(diaMMCEConfig, CFG_MMCEMODE, gMMCEStartMode);
@@ -856,8 +856,8 @@ void guiShowMMCEConfig()
     diaSetEnum(diaMMCEConfig, CFG_MMCESLOT, deviceSlots);
     diaSetInt(diaMMCEConfig, CFG_MMCESLOT, gMMCESlot);
 
-    diaSetEnum(diaMMCEConfig, CFG_MMCESEMA, semaEnqMethod);
-    diaSetInt(diaMMCEConfig, CFG_MMCESEMA, gMMCESema);
+    diaSetEnum(diaMMCEConfig, CFG_MMCE_WAIT_CYCLES, deviceAckWaitCycles);
+    diaSetInt(diaMMCEConfig, CFG_MMCE_WAIT_CYCLES, gMMCEAckWaitCycles);
 
 #ifdef __DEBUG
     diaSetInt(diaMMCEConfig, CFG_MMCEGAMEID, gMMCEEnableGameID);
@@ -870,7 +870,8 @@ void guiShowMMCEConfig()
 #ifdef __DEBUG
         diaGetInt(diaMMCEConfig, CFG_MMCEGAMEID, &gMMCEEnableGameID);
 #endif
-        diaGetInt(diaMMCEConfig, CFG_MMCESEMA, &gMMCESema);
+        diaGetInt(diaMMCEConfig, CFG_MMCE_WAIT_CYCLES, &gMMCEAckWaitCycles);
+
     }
 
     applyConfig(-1, -1, 0);
