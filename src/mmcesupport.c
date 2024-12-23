@@ -320,7 +320,7 @@ void mmceLaunchGame(item_list_t *itemList, int id, config_set_t *configSet)
         return;
     }
 
-    settings->sema_enq_method = gMMCESema;
+    settings->ack_wait_cycles = gMMCEAckWaitCycles;
 
     //TEMP: The fd given by sd2psx is not the same one we see here on the EE
     //and ps2sdk_get_iop_fd does not seem to return the right value either
@@ -350,8 +350,8 @@ void mmceLaunchGame(item_list_t *itemList, int id, config_set_t *configSet)
     }
 #endif
 
-    mcReset();
-    mcInit(MC_TYPE_XMC);
+    //mcReset();
+    //mcInit(MC_TYPE_XMC);
 
     if (gAutoLaunchBDMGame == NULL)
         deinit(NO_EXCEPTION, MMCE_MODE); // CAREFUL: deinit will call mmceCleanUp, so mmceGames/game will be freed

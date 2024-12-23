@@ -1110,9 +1110,9 @@ struct UIItem diaMMCEConfig[] = {
     {UI_LABEL, 0, 1, 1, -1, 0, 0, {.label = {NULL, _STR_MMCE_ADVANCED}}},
     {UI_SPLITTER},
 
-    {UI_LABEL, 0, 1, 1, -1, -40, 0, {.label = {NULL, _STR_MMCE_SEMA}}},
+    {UI_LABEL, 0, 1, 1, -1, -40, 0, {.label = {NULL, _STR_MMCE_WAIT_CYCLES}}},
     {UI_SPACER},
-    {UI_ENUM, CFG_MMCESEMA, 1, 1, _STR_HINT_MMCE_SEMA, 0, 0, {.intvalue = {0, 0, 0, 1}}},
+    {UI_ENUM, CFG_MMCE_WAIT_CYCLES, 1, 1, _STR_HINT_MMCE_WAIT_CYCLES, 0, 0, {.intvalue = {0, 0, 0, 1}}},
     {UI_BREAK},
 
     // buttons
