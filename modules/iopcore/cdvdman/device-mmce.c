@@ -97,7 +97,7 @@ void DeviceStop(void)
     DPRINTF("%s\n", __func__);
 }
 
-int DeviceReadSectors(u32 lsn, void *buffer, unsigned int sectors)
+int DeviceReadSectors(u64 lsn, void *buffer, unsigned int sectors)
 {
     int rv = SCECdErNO;
     int res = 0;
@@ -105,7 +105,7 @@ int DeviceReadSectors(u32 lsn, void *buffer, unsigned int sectors)
     int dump = 0;
 
     DPRINTF("%s(%u, 0x%p, %u)\n", __func__, (unsigned int)lsn, buffer, sectors);
-    
+
     WaitSema(mmce_io_sema);
     do {
         res = fp_mmcedrv_read_sector(MMCEDRV_TYPE_ISO, lsn, sectors, buffer);
