@@ -64,10 +64,12 @@ void DeviceFSInit(void)
     DPRINTF("ISO fd: %i\n", cdvdman_settings.iso_fd);
     DPRINTF("VMC fd: %i\n", cdvdman_settings.vmc_fd);
     DPRINTF("Ack wait cycles: %i\n", cdvdman_settings.ack_wait_cycles);
+    DPRINTF("Use alarms: %i\n", cdvdman_settings.use_alarms);
 
     fp_mmcedrv_config_set(MMCEDRV_SETTING_PORT, cdvdman_settings.port);
     fp_mmcedrv_config_set(MMCEDRV_SETTING_ISO_FD, cdvdman_settings.iso_fd);
     fp_mmcedrv_config_set(MMCEDRV_SETTING_ACK_WAIT_CYCLES, cdvdman_settings.ack_wait_cycles);
+    fp_mmcedrv_config_set(MMCEDRV_SETTING_USE_ALARMS, cdvdman_settings.use_alarms);
 
     DPRINTF("Waiting for device...\n");
 
@@ -102,7 +104,6 @@ int DeviceReadSectors(u64 lsn, void *buffer, unsigned int sectors)
     int rv = SCECdErNO;
     int res = 0;
     int retries = 0;
-    int dump = 0;
 
     DPRINTF("%s(%u, 0x%p, %u)\n", __func__, (unsigned int)lsn, buffer, sectors);
 

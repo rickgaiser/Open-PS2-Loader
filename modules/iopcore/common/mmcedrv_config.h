@@ -14,6 +14,7 @@ enum mmcedrv_settings {
     MMCEDRV_SETTING_ISO_FD = 0x1,
     MMCEDRV_SETTING_VMC_FD = 0x2,
     MMCEDRV_SETTING_ACK_WAIT_CYCLES = 0x3,
+    MMCEDRV_SETTING_USE_ALARMS = 0x4,
 };
 
 /* Game and VMC's are to be opened by MMCEMAN
