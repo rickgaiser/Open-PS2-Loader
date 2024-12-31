@@ -1115,6 +1115,11 @@ struct UIItem diaMMCEConfig[] = {
     {UI_ENUM, CFG_MMCE_WAIT_CYCLES, 1, 1, _STR_HINT_MMCE_WAIT_CYCLES, 0, 0, {.intvalue = {0, 0, 0, 1}}},
     {UI_BREAK},
 
+    {UI_LABEL, 0, 1, 1, -1, -40, 0, {.label = {NULL, _STR_MMCE_USE_ALARMS}}},
+    {UI_SPACER},
+    {UI_ENUM, CFG_MMCE_USE_ALARMS, 1, 1, _STR_HINT_MMCE_USE_ALARMS, 0, 0, {.intvalue = {0, 0, 0, 1}}},
+    {UI_BREAK},
+
     // buttons
     {UI_OK, 0, 1, 1, -1, 0, 0, {.label = {NULL, _STR_OK}}},
     {UI_BREAK},
