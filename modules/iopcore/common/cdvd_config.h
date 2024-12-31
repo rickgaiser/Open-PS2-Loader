@@ -95,6 +95,7 @@ struct cdvdman_settings_mmce
     int iso_fd;
     int vmc_fd;
     int ack_wait_cycles;
+    int use_alarms;
 } __attribute__((packed));
 
 #define CDVDMAN_SETTINGS_DEFAULT_COMMON                    \
