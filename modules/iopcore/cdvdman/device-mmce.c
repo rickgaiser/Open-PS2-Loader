@@ -9,7 +9,7 @@
 
 extern struct cdvdman_settings_mmce cdvdman_settings;
 
-uint32_t (*fp_mmcedrv_get_size)();
+uint32_t (*fp_mmcedrv_get_size)(int fd);
 int (*fp_mmcedrv_read_sector)(int type, unsigned int sector_start, unsigned int sector_count, void *buffer);
 void (*fp_mmcedrv_config_set)(int setting, int value);
 int (*fp_mmcedrv_read)(int fd, int size, void *ptr);
@@ -45,7 +45,7 @@ int DeviceReady(void)
 
 void DeviceFSInit(void)
 {
-    int64_t iso_size;
+    uint64_t iso_size;
 
     // get modload export table
     modinfo_t info;
@@ -61,20 +61,17 @@ void DeviceFSInit(void)
 
     //Set port and iso fd
     DPRINTF("Port: %i\n", cdvdman_settings.port);
-    DPRINTF("ISO fd: %i\n", cdvdman_settings.iso_fd);
-    DPRINTF("VMC fd: %i\n", cdvdman_settings.vmc_fd);
     DPRINTF("Ack wait cycles: %i\n", cdvdman_settings.ack_wait_cycles);
     DPRINTF("Use alarms: %i\n", cdvdman_settings.use_alarms);
 
     fp_mmcedrv_config_set(MMCEDRV_SETTING_PORT, cdvdman_settings.port);
-    fp_mmcedrv_config_set(MMCEDRV_SETTING_ISO_FD, cdvdman_settings.iso_fd);
     fp_mmcedrv_config_set(MMCEDRV_SETTING_ACK_WAIT_CYCLES, cdvdman_settings.ack_wait_cycles);
     fp_mmcedrv_config_set(MMCEDRV_SETTING_USE_ALARMS, cdvdman_settings.use_alarms);
 
     DPRINTF("Waiting for device...\n");
 
     while (1) {
-        iso_size = fp_mmcedrv_get_size();
+        iso_size = fp_mmcedrv_get_size(cdvdman_settings.iso_fd);
         if (iso_size > 0)
             break;
         DelayThread(100 * 1000); // 100ms
@@ -109,7 +106,7 @@ int DeviceReadSectors(u64 lsn, void *buffer, unsigned int sectors)
 
     WaitSema(mmce_io_sema);
     do {
-        res = fp_mmcedrv_read_sector(MMCEDRV_TYPE_ISO, lsn, sectors, buffer);
+        res = fp_mmcedrv_read_sector(cdvdman_settings.iso_fd, lsn, sectors, buffer);
         retries++;
     } while (res != sectors && retries < 3);
     SignalSema(mmce_io_sema);

@@ -30,7 +30,7 @@ int DeviceReadPage(int mc_num, void *buf, u32 page_num)
     offset = page_num * vmcSpec[mc_num].cspec.PageSize;
     vmc_fd = vmcSpec[mc_num].fd;
 
-    DPRINTF("reading page 0x%lx at offset 0x%lx\n", page_num, offset);
+    DPRINTF("fd: %i reading page 0x%lx at offset 0x%lx\n", vmc_fd, page_num, offset);
 
     mmce_read_offset(vmc_fd, offset, vmcSpec[mc_num].cspec.PageSize, buf);
 

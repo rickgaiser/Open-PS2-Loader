@@ -49,7 +49,6 @@ void bdm_writeSector(u64 lba, unsigned short int nsectors, const unsigned char *
 
 #endif
 
-/* TODO: MMCE Transfer Imports current copy paste, BDM */
 #ifdef MMCE_DRIVER
 void mmce_read_offset(int fd, unsigned int offset, unsigned int size, unsigned char *buffer);
 #define I_mmce_read_offset DECLARE_IMPORT(6, mmce_read_offset)
