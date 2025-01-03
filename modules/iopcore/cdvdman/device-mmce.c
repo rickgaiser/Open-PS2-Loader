@@ -106,7 +106,7 @@ int DeviceReadSectors(u64 lsn, void *buffer, unsigned int sectors)
 
     WaitSema(mmce_io_sema);
     do {
-        res = fp_mmcedrv_read_sector(cdvdman_settings.iso_fd, lsn, sectors, buffer);
+        res = fp_mmcedrv_read_sector(cdvdman_settings.iso_fd, (u32)lsn, sectors, buffer);
         retries++;
     } while (res != sectors && retries < 3);
     SignalSema(mmce_io_sema);
