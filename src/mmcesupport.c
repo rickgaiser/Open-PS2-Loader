@@ -234,10 +234,9 @@ void mmceLaunchGame(item_list_t *itemList, int id, config_set_t *configSet)
 
                 sprintf(vmc_path, "%sVMC/%s.bin", mmcePrefix, vmc_name);
 
-                vmc_fd = open(vmc_path, O_RDWR);
+                vmc_fd = fileXioOpen(vmc_path, 0x3, 0666);
                 if (vmc_fd >= 0) {
                     mmce_vmc_infos.fd = fileXioIoctl2(vmc_fd, 0x80, NULL, 0, NULL, 0);
-                    LOG("VMC FD: %i\n", mmce_vmc_infos.fd);
                     mmce_vmc_infos.active = 1;
                 }
             }
