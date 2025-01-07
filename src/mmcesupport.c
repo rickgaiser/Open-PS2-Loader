@@ -32,10 +32,10 @@ int mmceDetectSlot(void)
 {
     int ret = -1;
     if (fileXioDevctl("mmce0:/", 0x1, NULL, 0, NULL, 0) != -1) {
-        sprintf(mmcePrefix, "mmce0:/");
+        sprintf(mmcePrefix, "mmce0:/%s", gMMCEPrefix);
         ret = 2;
     } else if (fileXioDevctl("mmce1:/", 0x1, NULL, 0, NULL, 0) != -1) {
-        sprintf(mmcePrefix, "mmce1:/");
+        sprintf(mmcePrefix, "mmce1:/%s", gMMCEPrefix);
         ret = 3;
     }
     return ret;
@@ -44,9 +44,9 @@ int mmceDetectSlot(void)
 void mmceSetPrefix(void)
 {
     if (gMMCESlot == 0)
-        sprintf(mmcePrefix, "mmce0:/");
+        sprintf(mmcePrefix, "mmce0:/%s", gMMCEPrefix);
     else if (gMMCESlot == 1)
-        sprintf(mmcePrefix, "mmce1:/");
+        sprintf(mmcePrefix, "mmce1:/%s", gMMCEPrefix);
     else if (gMMCESlot == 2)
         (void)mmceDetectSlot();
 }
