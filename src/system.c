@@ -503,6 +503,12 @@ static unsigned int sendIrxKernelRAM(const char *startup, const char *mode_str, 
     irxptr_tab[modcount].info = size_resetspu_irx | SET_OPL_MOD_ID(OPL_MODULE_ID_RESETSPU);
     irxptr_tab[modcount++].ptr = (void *)&resetspu_irx;
 
+    //Load MMCEIGR module (~1.4KB) on reset if bootcard switch is enabled for either slot
+    if (gMMCEIGRSlot != 0) {
+        irxptr_tab[modcount].info = size_mmceigr_irx | SET_OPL_MOD_ID(OPL_MODULE_ID_MMCEIGR);
+        irxptr_tab[modcount++].ptr = (void *)&mmceigr_irx;
+    }
+
 #ifdef PADEMU
 #define PADEMU_ARG || gEnablePadEmu
 #else
@@ -908,6 +914,9 @@ void sysLaunchLoaderElf(const char *filename, const char *mode_str, int size_cdv
 
     strncpy(config->ExitPath, gExitPath, CORE_EXIT_PATH_MAX_LEN);
     strncpy(config->GameModeDesc, mode_str, CORE_GAME_MODE_DESC_MAX_LEN);
+
+    //MMCEIGR Settings
+    config->MMCEIGRSettings = gMMCEIGRSlot;
 
     config->EnableDebug = gEnableDebug;
     config->HDDSpindown = gHDDSpindown;
