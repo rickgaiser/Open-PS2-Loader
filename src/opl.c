@@ -138,6 +138,7 @@ int gMMCEStartMode;
 int bdmCacheSize;
 int hddCacheSize;
 int smbCacheSize;
+int gMMCEIGRSlot;
 int gMMCESlot;
 int gMMCEAckWaitCycles;
 int gMMCEUseAlarms;
@@ -948,6 +949,7 @@ static void _loadConfig()
             configGetInt(configOPL, CONFIG_OPL_APP_MODE, &gAPPStartMode);
             configGetInt(configOPL, CONFIG_OPL_MMCE_MODE, &gMMCEStartMode);
             configGetInt(configOPL, CONFIG_OPL_MMCE_SLOT, &gMMCESlot);
+            configGetInt(configOPL, CONFIG_OPL_MMCEIGR_SLOT, &gMMCEIGRSlot);
 #ifdef __DEBUG
             configGetInt(configOPL, CONFIG_OPL_MMCE_GAMEID, &gMMCEEnableGameID);
 #endif
@@ -1112,6 +1114,7 @@ static void _saveConfig()
         configSetInt(configOPL, CONFIG_OPL_APP_MODE, gAPPStartMode);
         configSetInt(configOPL, CONFIG_OPL_MMCE_MODE, gMMCEStartMode);
         configSetInt(configOPL, CONFIG_OPL_MMCE_SLOT, gMMCESlot);
+        configSetInt(configOPL, CONFIG_OPL_MMCEIGR_SLOT, gMMCEIGRSlot);
 #ifdef __DEBUG
         configSetInt(configOPL, CONFIG_OPL_MMCE_GAMEID, gMMCEEnableGameID);
 #endif
@@ -1764,6 +1767,7 @@ static void setDefaults(void)
     gMMCEStartMode = START_MODE_DISABLED;
 
     gMMCESlot = 2; //Default to first Auto slot
+    gMMCEIGRSlot = 3;
 #ifdef __DEBUG
     gMMCEEnableGameID = 1;
 #endif

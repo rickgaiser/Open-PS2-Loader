@@ -849,7 +849,8 @@ void guiShowMMCEConfig()
     const char *deviceModes[] = {_l(_STR_OFF), _l(_STR_MANUAL), _l(_STR_AUTO), NULL};
     const char *deviceSlots[] = {"0", "1", _l(_STR_AUTO), NULL};
     const char *deviceAckWaitCycles[] = {"0", "1", "2", "3", "4", "5", NULL};
-    const char *deviceUseAlarms[] = {"OFF", "ON", NULL};
+    const char *deviceOnOff[] = {"OFF", "ON", NULL};
+    const char *deviceIGRSlots[] = {"NONE", "0", "1", "BOTH", NULL};
 
     diaSetEnum(diaMMCEConfig, CFG_MMCEMODE, deviceModes);
     diaSetInt(diaMMCEConfig, CFG_MMCEMODE, gMMCEStartMode);
@@ -857,10 +858,13 @@ void guiShowMMCEConfig()
     diaSetEnum(diaMMCEConfig, CFG_MMCESLOT, deviceSlots);
     diaSetInt(diaMMCEConfig, CFG_MMCESLOT, gMMCESlot);
 
+    diaSetEnum(diaMMCEConfig, CFG_MMCEIGRSLOT, deviceIGRSlots);
+    diaSetInt(diaMMCEConfig, CFG_MMCEIGRSLOT, gMMCEIGRSlot);
+
     diaSetEnum(diaMMCEConfig, CFG_MMCE_WAIT_CYCLES, deviceAckWaitCycles);
     diaSetInt(diaMMCEConfig, CFG_MMCE_WAIT_CYCLES, gMMCEAckWaitCycles);
 
-    diaSetEnum(diaMMCEConfig, CFG_MMCE_USE_ALARMS, deviceUseAlarms);
+    diaSetEnum(diaMMCEConfig, CFG_MMCE_USE_ALARMS, deviceOnOff);
     diaSetInt(diaMMCEConfig, CFG_MMCE_USE_ALARMS, gMMCEUseAlarms);
 
 #ifdef __DEBUG
@@ -877,6 +881,7 @@ void guiShowMMCEConfig()
         diaGetInt(diaMMCEConfig, CFG_MMCE_WAIT_CYCLES, &gMMCEAckWaitCycles);
         diaGetInt(diaMMCEConfig, CFG_MMCE_USE_ALARMS, &gMMCEUseAlarms);
 
+        diaGetInt(diaMMCEConfig, CFG_MMCEIGRSLOT, &gMMCEIGRSlot);
     }
 
     applyConfig(-1, -1, 0);

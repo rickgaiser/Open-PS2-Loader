@@ -11,7 +11,7 @@
 #include "include/extern_irx.h"
 #include "include/cheatman.h"
 #include "modules/iopcore/common/cdvd_config.h"
-
+#include "../ee_core/include/coreconfig.h"
 #include <usbhdfsd-common.h>
 
 #include <ps2sdkapi.h>
@@ -305,6 +305,7 @@ void mmceLaunchGame(item_list_t *itemList, int id, config_set_t *configSet)
 
     if (configGetStrCopy(configSet, CONFIG_ITEM_ALTSTARTUP, filename, sizeof(filename)) == 0)
         strcpy(filename, game->startup);
+
 
     //MMCEDRV settings
     if (gMMCESlot == 0)
