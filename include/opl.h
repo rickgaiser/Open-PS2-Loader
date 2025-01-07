@@ -200,6 +200,7 @@ extern int gEnableWrite;
 // These prefixes are relative to the device's name (meaning that they do not include the device name).
 extern char gBDMPrefix[32];
 extern char gETHPrefix[32];
+extern char gMMCEPrefix[32];
 
 extern int gRememberLastPlayed;
 

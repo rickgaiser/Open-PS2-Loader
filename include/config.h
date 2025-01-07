@@ -98,6 +98,7 @@ enum CONFIG_INDEX {
 #define CONFIG_OPL_BDM_CACHE            "bdm_cache"
 #define CONFIG_OPL_HDD_CACHE            "hdd_cache"
 #define CONFIG_OPL_SMB_CACHE            "smb_cache"
+#define CONFIG_OPL_MMCE_PREFIX          "mmce_prefix"
 #define CONFIG_OPL_MMCE_SLOT            "mmce_slot"
 #define CONFIG_OPL_MMCEIGR_SLOT         "mmceigr_slot"
 #define CONFIG_OPL_MMCE_GAMEID          "mmce_gameid"
