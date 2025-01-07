@@ -84,6 +84,8 @@ IMPORT_BIN2C(mmceman_irx);
 
 IMPORT_BIN2C(mmcedrv_irx);
 
+IMPORT_BIN2C(mmceigr_irx);
+
 IMPORT_BIN2C(nbns_irx);
 
 IMPORT_BIN2C(netman_irx);

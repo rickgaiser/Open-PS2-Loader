@@ -101,6 +101,7 @@ static void oplShutdown(int poff)
     if (vmcShutdownCb != NULL)
         vmcShutdownCb();
     DeviceUnmount();
+
     if (poff) {
         DeviceStop();
 #ifdef __USE_DEV9
