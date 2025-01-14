@@ -694,6 +694,8 @@ gui_strings:
   string: Cheat Selection
 - label: HDD_HINT
   string: Only one HDD allowed, enabling locks APA or GPT.
+- label: MMCE
+  string: MMCE
 - label: MMCE_GAMES
   string: MMCE Games
 - label: MMCEMODE

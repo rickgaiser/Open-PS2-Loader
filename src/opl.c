@@ -1179,8 +1179,8 @@ static void _saveConfig()
 
 void applyConfig(int themeID, int langID, int skipDeviceRefresh)
 {
-    if (gDefaultDevice < 0 || gDefaultDevice > APP_MODE)
-        gDefaultDevice = APP_MODE;
+    if (gDefaultDevice < 0 || gDefaultDevice > MMCE_MODE)
+        gDefaultDevice = MMCE_MODE;
 
     guiUpdateScrollSpeed();
 
