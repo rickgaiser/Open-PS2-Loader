@@ -12,6 +12,10 @@ jobs:
     runs-on: ubuntu-latest
     container: ps2max/dev:v20250725
     steps:
+    - name: Install dependencies
+      run: |
+        apk add zip
+
     - name: git checkout
       uses: actions/checkout@v4
 
@@ -53,6 +57,10 @@ jobs:
     runs-on: ubuntu-latest
     container: ps2max/dev:v20250725
     steps:
+    - name: Install dependencies
+      run: |
+        apk add zip
+
     - name: git checkout
       uses: actions/checkout@v4
 
@@ -124,6 +132,10 @@ jobs:
     runs-on: ubuntu-latest
     container: ghcr.io/ps2homebrew/ps2homebrew${{ matrix.container_commit }}
     steps:
+    - name: Install dependencies
+      run: |
+        apk add zip
+
     - name: git checkout
       uses: actions/checkout@v4
 
@@ -169,6 +181,10 @@ jobs:
       USERNAME: ${{ secrets.USERNAME }}
       PASSWORD: ${{ secrets.PASSWORD }}
     steps:
+    - name: Install dependencies
+      run: |
+        apk add 7zip
+
     - name: git checkout
       uses: actions/checkout@v4
 
