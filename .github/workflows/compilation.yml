@@ -10,7 +10,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: ghcr.io/ps2homebrew/ps2homebrew:main
+    container: ps2max/dev:v20250725
     steps:
     - name: git checkout
       uses: actions/checkout@v4
@@ -51,7 +51,7 @@ jobs:
         extra: [EXTRA_FEATURES=0, EXTRA_FEATURES=1]
         pademu: [PADEMU=0, PADEMU=1]
     runs-on: ubuntu-latest
-    container: ghcr.io/ps2homebrew/ps2homebrew:main
+    container: ps2max/dev:v20250725
     steps:
     - name: git checkout
       uses: actions/checkout@v4
@@ -91,7 +91,7 @@ jobs:
 
   build-lang:
     runs-on: ubuntu-latest
-    container: ghcr.io/ps2homebrew/ps2homebrew:main
+    container: ps2max/dev:v20250725
     steps:
     - name: git checkout
       uses: actions/checkout@v4
