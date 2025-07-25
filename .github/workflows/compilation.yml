@@ -101,6 +101,10 @@ jobs:
     runs-on: ubuntu-latest
     container: ps2max/dev:v20250725
     steps:
+    - name: Install dependencies
+      run: |
+        apk add zip
+
     - name: git checkout
       uses: actions/checkout@v4
 
