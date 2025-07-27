@@ -92,7 +92,7 @@ EECORE_OBJS = ee_core.o ioprp.o util.o \
 		ingame_smstcpip.o smap_ingame.o smbman.o smbinit.o
 
 PNG_ASSETS = load0 load1 load2 load3 load4 load5 load6 load7 usb usb_bd ilk_bd \
-	m4s_bd hdd_bd hdd eth app cross triangle circle square select start left right \
+	m4s_bd hdd_bd mmce hdd eth app cross triangle circle square select start left right \
 	background info cover disc screen ELF HDL ISO ZSO UL APPS CD DVD Aspect_s Aspect_w Aspect_w1 \
 	Aspect_w2 Device_1 Device_2 Device_3 Device_4 Device_5 Device_6 Device_all Rating_0 \
 	Rating_1 Rating_2 Rating_3 Rating_4 Rating_5 Scan_240p Scan_240p1 Scan_480i Scan_480p \
