@@ -136,7 +136,7 @@ void bdmLoadModules(void)
     LOG("BDMSUPPORT Modules loaded\n");
 }
 
-void bdmInit(item_list_t *itemList)
+static void bdmInit(item_list_t *itemList)
 {
     LOG("BDMSUPPORT Init\n");
 
@@ -147,6 +147,7 @@ void bdmInit(item_list_t *itemList)
     pDeviceData->bdmGameCount = 0;
     pDeviceData->bdmGames = NULL;
     configGetInt(configGetByType(CONFIG_OPL), "usb_frames_delay", &itemList->delay);
+    bdmLoadModules();
     itemList->enabled = 1;
 }
 
