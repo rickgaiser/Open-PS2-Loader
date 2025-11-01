@@ -32,40 +32,6 @@ static int bdmDeviceListInitialized = 0;
 void bdmInitDevicesData();
 int bdmUpdateDeviceData(item_list_t *itemList);
 
-// Identifies the partition that the specified file is stored on and generates a full path to it.
-int bdmFindPartition(char *target, const char *name, int write)
-{
-    int i, fd;
-    char path[256];
-
-    for (i = 0; i < MAX_BDM_DEVICES; i++) {
-        if (gBDMPrefix[0] != '\0')
-            sprintf(path, "mass%d:%s/%s", i, gBDMPrefix, name);
-        else
-            sprintf(path, "mass%d:%s", i, name);
-        if (write)
-            fd = open(path, O_WRONLY | O_TRUNC | O_CREAT, 0666);
-        else
-            fd = open(path, O_RDONLY);
-
-        if (fd >= 0) {
-            if (gBDMPrefix[0] != '\0')
-                sprintf(target, "mass%d:%s/", i, gBDMPrefix);
-            else
-                sprintf(target, "mass%d:", i);
-            close(fd);
-            return 1;
-        }
-    }
-
-    // default to first partition (for themes, ...)
-    if (gBDMPrefix[0] != '\0')
-        sprintf(target, "mass0:%s/", gBDMPrefix);
-    else
-        sprintf(target, "mass0:");
-    return 0;
-}
-
 static unsigned int BdmGeneration = 0;
 
 static void bdmEventHandler(void *packet, void *opt)
