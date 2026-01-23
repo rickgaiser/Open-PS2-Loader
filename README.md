@@ -32,6 +32,11 @@ All of the devices mentioned above support multiple file formats, including:
 - Homebrews (Apps) in ELF format;
 - HDDs support the HDLoader format.
 
+This fork of OPL also supports loading via MMCE with devices such as the Memcard Pro 2. 
+
+>[!NOTE].
+For MMCE compatiblity, disable cover art when using MMCE features.
+
 It's now the most compatible homebrew loader.
 
 >[!NOTE]
