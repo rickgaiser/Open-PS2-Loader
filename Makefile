@@ -231,7 +231,7 @@ EE_LDFLAGS += -fdata-sections -ffunction-sections -Wl,--gc-sections
 
 ifdef PS2SDK
 
-all: download_lng download_lwNBD languages
+all: languages
 	echo "Building Open PS2 Loader $(OPL_VERSION)..."
 	echo "-Interface"
 ifneq ($(NOT_PACKED),1)
@@ -240,7 +240,7 @@ else
 	$(MAKE) $(EE_BIN)
 endif
 
-release: download_lng download_lwNBD languages $(EE_VPKD).ZIP
+release: languages $(EE_VPKD).ZIP
 
 debug:
 	$(MAKE) DEBUG=1 all
@@ -266,7 +266,7 @@ iopcore_ppctty_debug:
 ingame_ppctty_debug:
 	$(MAKE) DEBUG=1 INGAME_DEBUG=1 TTY_APPROACH=PPC_UART all
 
-clean:	download_lwNBD
+clean:
 	echo "Cleaning..."
 	echo "-Interface"
 	rm -fr $(MAPFILE) $(EE_BIN) $(EE_BIN_PACKED) $(EE_BIN_STRIPPED) $(EE_VPKD).* $(EE_OBJS_DIR) $(EE_ASM_DIR)

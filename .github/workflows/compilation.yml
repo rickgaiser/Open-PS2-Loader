@@ -18,6 +18,7 @@ jobs:
     - run: |
         git config --global --add safe.directory "$GITHUB_WORKSPACE"
         git fetch --prune --unshallow
+        make download_lng download_lwNBD
 
     - name: Compile -> make clean release
       run: make --trace clean release
@@ -59,6 +60,7 @@ jobs:
     - run: |
         git config --global --add safe.directory "$GITHUB_WORKSPACE"
         git fetch --prune --unshallow
+        make download_lng download_lwNBD
 
     - name: Get version
       run: |
@@ -99,6 +101,7 @@ jobs:
     - run: |
         git config --global --add safe.directory "$GITHUB_WORKSPACE"
         git fetch --prune --unshallow
+        make download_lng download_lwNBD
 
     - name: Compile -> make download_lng languages
       run: make --trace download_lng languages
@@ -130,6 +133,7 @@ jobs:
     - run: |
         git config --global --add safe.directory "$GITHUB_WORKSPACE"
         git fetch --prune --unshallow
+        make download_lng download_lwNBD
 
     - name: Get version
       run: |
@@ -172,7 +176,9 @@ jobs:
     - name: git checkout
       uses: actions/checkout@v4
 
-    - run: git fetch --prune --unshallow
+    - run: |
+        git fetch --prune --unshallow
+        make download_lng download_lwNBD
 
     - name: Get version
       run: |
