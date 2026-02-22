@@ -10,7 +10,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: ps2max/dev:v20250725-2
+    container: ps2max/dev:v20260222
     steps:
     - name: git checkout
       uses: actions/checkout@v4
@@ -51,7 +51,7 @@ jobs:
         extra: [EXTRA_FEATURES=0, EXTRA_FEATURES=1]
         pademu: [PADEMU=0, PADEMU=1]
     runs-on: ubuntu-latest
-    container: ps2max/dev:v20250725-2
+    container: ps2max/dev:v20260222
     steps:
     - name: git checkout
       uses: actions/checkout@v4
@@ -91,7 +91,7 @@ jobs:
 
   build-lang:
     runs-on: ubuntu-latest
-    container: ps2max/dev:v20250725-2
+    container: ps2max/dev:v20260222
     steps:
     - name: git checkout
       uses: actions/checkout@v4
@@ -120,7 +120,7 @@ jobs:
       matrix:
         debug: [iopcore_debug, ingame_debug, eesio_debug, iopcore_ppctty_debug, ingame_ppctty_debug, DTL_T10000=1]
         # container_commit: [":main", "@sha256:1f00689809455d43b520e4cd4eea00c6be56d71819ae38efc6b55b56464cbd1e"] Replace with desired docker image hash or tag
-        container_commit: [":v20250725-2"]
+        container_commit: [":v20260222"]
     runs-on: ubuntu-latest
     container: ps2max/dev${{ matrix.container_commit }}
     steps:
